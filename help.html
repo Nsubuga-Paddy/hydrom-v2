@@ -1,0 +1,3138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro-M Navigation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #374151;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-toggle:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: #374151;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #0896FC;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .user-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #0896FC;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-radius: 0.25rem;
+            margin: 0.25rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0896FC;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .login-btn:hover {
+            background: #0678d4;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 70px;
+            left: -100%;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .mobile-nav.show {
+            left: 0;
+        }
+
+        /* Dam Sidebar Styles */
+        .dam-sidebar {
+            padding: 1rem;
+        }
+
+        .dam-sidebar-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-sidebar-header h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-sidebar-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .dam-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dam-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dam-item:hover {
+            border-color: #0896FC;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .dam-item.featured {
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            border-color: #0896FC;
+        }
+
+        .dam-item.featured .dam-info h4,
+        .dam-item.featured .dam-info p,
+        .dam-item.featured .dam-status {
+            color: white;
+        }
+
+        .dam-icon {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dam-item.featured .dam-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dam-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .dam-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .dam-info .location {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .status-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .dam-item.featured .status-label,
+        .dam-item.featured .status-value {
+            color: white;
+        }
+
+        /* Mobile Navigation Menu (hidden on large screens) */
+        .mobile-nav-menu {
+            list-style: none;
+            padding: 1rem;
+            display: none;
+        }
+
+        .mobile-nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .mobile-nav-link.active {
+            background-color: #0896FC;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .dam-sidebar {
+                display: none;
+            }
+
+            .mobile-nav-menu {
+                display: block;
+            }
+        }
+
+        /* Content area for testing */
+        .content {
+            margin-top: 90px;
+            padding: 2rem;
+            margin-right: 320px; /* Make space for right sidebar */
+        }
+
+        .content h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .content p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        /* Right Sidebar Styles */
+        .right-sidebar {
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 998;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-form {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .categories-section h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-item.active {
+            background-color: #0896FC;
+        }
+
+        .category-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .category-item:hover a {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .category-item.active a {
+            color: white;
+        }
+
+        .category-item i {
+            font-size: 1rem;
+        }
+
+        /* Alarms Section */
+        .alarms-section {
+            padding: 1.5rem;
+        }
+
+        .alarms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .alarms-header h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .alarms-link {
+            color: #0896FC;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .alarms-link:hover {
+            color: #0678d4;
+        }
+
+        .alarms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .alarm-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-item.critical {
+            border-left: 3px solid #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alarm-item.warning {
+            border-left: 3px solid #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alarm-icon {
+            color: #6b7280;
+            font-size: 1rem;
+            margin-top: 0.125rem;
+        }
+
+        .alarm-item.critical .alarm-icon {
+            color: #ef4444;
+        }
+
+        .alarm-item.warning .alarm-icon {
+            color: #f59e0b;
+        }
+
+        .alarm-content h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .alarm-content p {
+            font-size: 0.7rem;
+            color: #6b7280;
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .alarm-time {
+            font-size: 0.65rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                width: 280px;
+            }
+            
+            .content {
+                margin-right: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .right-sidebar {
+                display: none;
+            }
+            
+            .content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 0;
+            margin-right: 320px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s ease;
+            background: var(--bg-secondary);
+        }
+
+        .main-content.with-sidebar {
+            margin-left: 280px;
+        }
+
+        /* Blue Card */
+        .blue-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 213px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .blue-card-left {
+            background: #0896FC;
+            width: 200px;
+            padding: 2rem;
+        }
+
+        .blue-card-right {
+            background: white;
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-subtitle {
+            color: var(--text-tertiary);
+            font-size: 1.125rem;
+        }
+
+        /* Monitoring Section Styles */
+        .monitoring-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Monitoring Grid */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Date/Time Card */
+        .datetime-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .datetime-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .datetime-content {
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Dam Status Cards */
+        .dam-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dam-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dam-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+            transform: translateY(-2px);
+        }
+
+        .dam-card.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+        }
+
+        .dam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .dam-header h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning-color);
+        }
+
+        .status-indicator.error {
+            background: var(--error-color);
+        }
+
+        .dam-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-item:hover {
+            background: var(--bg-secondary);
+            transform: scale(1.02);
+        }
+
+        .metric-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Prediction Grid */
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .prediction-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-placeholder small {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        /* GIS Grid */
+        .gis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gis-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .gis-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .gis-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design for Monitoring */
+        @media (max-width: 1200px) {
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .datetime-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .dam-status-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: white;
+            border-top: 3px solid #0896FC;
+            padding: 0.75rem 2rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo img {
+            height: 25px;
+            width: auto;
+        }
+
+        .footer-text p {
+            color: #0896FC;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+            
+            .footer-logo img {
+                height: 20px;
+            }
+            
+            .footer-text p {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Help Page Styles */
+        .help-navigation {
+            margin-bottom: 3rem;
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nav-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+            border-color: #0896FC;
+        }
+
+        .nav-card i {
+            font-size: 2rem;
+            color: #0896FC;
+            margin-bottom: 1rem;
+        }
+
+        .nav-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .help-section {
+            margin-bottom: 4rem;
+        }
+
+        .help-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .help-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-card h3 i {
+            color: #0896FC;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+        }
+
+        .feature-item i {
+            color: #0896FC;
+            font-size: 1.125rem;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1rem;
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #0896FC;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .nav-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nav-item-guide {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+        }
+
+        .nav-item-guide h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item-guide h4 i {
+            color: #0896FC;
+        }
+
+        .sidebar-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .sidebar-section {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+        }
+
+        .sidebar-section h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-section h4 i {
+            color: #0896FC;
+        }
+
+        .sidebar-section ul {
+            margin-left: 1rem;
+        }
+
+        .sidebar-section li {
+            margin-bottom: 0.25rem;
+            color: #6b7280;
+        }
+
+        .feature-detail {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-text h4 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-tips {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 4px solid #0896FC;
+            border-radius: 0.25rem;
+        }
+
+        .feature-tips strong {
+            color: #1f2937;
+        }
+
+        .feature-tips ul {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .feature-tips li {
+            margin-bottom: 0.25rem;
+            color: #374151;
+        }
+
+        .troubleshooting-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .issue-item {
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+        }
+
+        .issue-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #dc2626;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .issue-item h4 i {
+            color: #dc2626;
+        }
+
+        .issue-item p {
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .issue-item strong {
+            color: #1f2937;
+        }
+
+        .performance-tips {
+            padding: 1.5rem;
+            background: #f0f9ff;
+            border-radius: 0.5rem;
+            border: 1px solid #bae6fd;
+        }
+
+        .tip-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0896FC;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tip-item h4 i {
+            color: #fbbf24;
+        }
+
+        .tip-item ul {
+            margin-left: 1rem;
+        }
+
+        .tip-item li {
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .tip-item strong {
+            color: #1f2937;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .faq-item {
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+        }
+
+        .faq-item h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .faq-item p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .contact-support {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .support-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .support-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+        }
+
+        .support-card i {
+            font-size: 2.5rem;
+            color: #0896FC;
+            margin-bottom: 1rem;
+        }
+
+        .support-card h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .support-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-support {
+            display: inline-block;
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-support:hover {
+            background: linear-gradient(135deg, #0678d4, #0563b3);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Design for Help Page */
+        @media (max-width: 768px) {
+            .nav-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-guide {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-guide {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-detail {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .contact-support {
+                grid-template-columns: 1fr;
+            }
+
+            .help-card {
+                padding: 1.5rem;
+            }
+
+            .step-list li {
+                padding-left: 2.5rem;
+            }
+
+            .step-list li::before {
+                width: 1.75rem;
+                height: 1.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Enhanced content header styles matching download data */
+        .content-header {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0896FC, #3b82f6, #0896FC);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .content-title::before {
+            content: '❓';
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .content-subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            font-weight: 400;
+            line-height: 1.6;
+            position: relative;
+            border-left: 3px solid #0896FC;
+            background: rgba(8, 150, 252, 0.05);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+
+
+        /* Enhanced Help Navigation Cards */
+        .help-navigation {
+            margin-bottom: 3rem;
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nav-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+            border-color: #0896FC;
+        }
+
+        .nav-card i {
+            font-size: 2rem;
+            color: #0896FC;
+            margin-bottom: 1rem;
+        }
+
+        .nav-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Enhanced Help Section Cards */
+        .help-section {
+            margin-bottom: 4rem;
+        }
+
+        .help-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .help-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .help-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-card h3 i {
+            color: #0896FC;
+        }
+
+        /* Enhanced Feature List */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: #f0f9ff;
+            transform: translateX(5px);
+        }
+
+        .feature-item i {
+            color: #0896FC;
+            font-size: 1.125rem;
+        }
+
+        /* Enhanced Step List */
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 1rem;
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 4px rgba(8, 150, 252, 0.2);
+        }
+
+        /* Enhanced Navigation Guide */
+        .nav-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nav-item-guide {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item-guide:hover {
+            background: #f0f9ff;
+            border-color: #0896FC;
+            transform: translateY(-2px);
+        }
+
+        .nav-item-guide h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item-guide h4 i {
+            color: #0896FC;
+        }
+
+        /* Enhanced Sidebar Guide */
+        .sidebar-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .sidebar-section {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-section:hover {
+            background: #f0f9ff;
+            border-color: #0896FC;
+            transform: translateY(-2px);
+        }
+
+        .sidebar-section h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-section h4 i {
+            color: #0896FC;
+        }
+
+        .sidebar-section ul {
+            margin-left: 1rem;
+        }
+
+        .sidebar-section li {
+            margin-bottom: 0.25rem;
+            color: #6b7280;
+        }
+
+        /* Enhanced Feature Detail */
+        .feature-detail {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.2);
+        }
+
+        .feature-text h4 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-tips {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-left: 4px solid #0896FC;
+            border-radius: 0.25rem;
+        }
+
+        .feature-tips strong {
+            color: #1f2937;
+        }
+
+        .feature-tips ul {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .feature-tips li {
+            margin-bottom: 0.25rem;
+            color: #374151;
+        }
+
+        /* Enhanced Troubleshooting List */
+        .troubleshooting-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .issue-item {
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .issue-item:hover {
+            background: #f0f9ff;
+            border-color: #0896FC;
+            transform: translateY(-2px);
+        }
+
+        .issue-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #dc2626;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .issue-item h4 i {
+            color: #dc2626;
+        }
+
+        .issue-item p {
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .issue-item strong {
+            color: #1f2937;
+        }
+
+        /* Enhanced Performance Tips */
+        .performance-tips {
+            padding: 1.5rem;
+            background: #f0f9ff;
+            border-radius: 0.5rem;
+            border: 1px solid #bae6fd;
+        }
+
+        .tip-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0896FC;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tip-item h4 i {
+            color: #fbbf24;
+        }
+
+        .tip-item ul {
+            margin-left: 1rem;
+        }
+
+        .tip-item li {
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .tip-item strong {
+            color: #1f2937;
+        }
+
+        /* Enhanced FAQ List */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .faq-item {
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .faq-item h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .faq-item p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Enhanced Contact Support */
+        .contact-support {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .support-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+            border-color: #0896FC;
+        }
+
+        .support-card i {
+            font-size: 2.5rem;
+            color: #0896FC;
+            margin-bottom: 1rem;
+        }
+
+        .support-card h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .support-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-support {
+            display: inline-block;
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-support:hover {
+            background: linear-gradient(135deg, #0678d4, #0563b3);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Design for Enhanced Help Page */
+        @media (max-width: 768px) {
+            .nav-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-guide {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-guide {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-detail {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .contact-support {
+                grid-template-columns: 1fr;
+            }
+
+            .help-card {
+                padding: 1.5rem;
+            }
+
+            .step-list li {
+                padding-left: 2.5rem;
+            }
+
+            .step-list li::before {
+                width: 1.75rem;
+                height: 1.75rem;
+                font-size: 0.75rem;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="./home.html" class="logo">
+                <img src="logo.png" alt="Hydro-M Logo">
+            </a>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="./home.html" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="./system-alarms.html" class="nav-link">System Alarms</a>
+            </li>
+            <li class="nav-item">
+                <a href="./about-us.html" class="nav-link">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Contact Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./download-data.html" class="nav-link">Download Data</a>
+            </li>
+            <li class="nav-item">
+                <a href="./help.html" class="nav-link active">Help</a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user"></i>
+                    <span>John Doe</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="dam-sidebar">
+            <div class="dam-sidebar-header">
+                <h3>THE CASCADE</h3>
+                <p>Real-time dam status and data</p>
+            </div>
+            <div class="dam-list">
+                <a href="#" class="dam-item featured">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Lake Nalubaale</h4>
+                        <p class="location">Jinja Pier</p>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1500mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Kiira HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1480mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">200MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">520 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Bujagali HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1520mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">250MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">380 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Isimba HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1450mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">180MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">450 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="./home.html" class="mobile-nav-link">Dashboard</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./system-alarms.html" class="mobile-nav-link">System Alarms</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./about-us.html" class="mobile-nav-link">About Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#" class="mobile-nav-link">Contact Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./download-data.html" class="mobile-nav-link">Download Data</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./help.html" class="mobile-nav-link active">Help</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Help Header -->
+        <div class="content-header">
+            <h1 class="content-title">Help & Support</h1>
+            <p class="content-subtitle">Get started with Hydro-M and learn how to navigate the system effectively</p>
+        </div>
+
+
+
+        <!-- Quick Navigation -->
+        <div class="help-navigation">
+            <div class="nav-cards">
+                <a href="#getting-started" class="nav-card">
+                    <i class="fas fa-rocket"></i>
+                    <h3>Getting Started</h3>
+                    <p>Quick setup and first steps</p>
+                </a>
+                <a href="#navigation" class="nav-card">
+                    <i class="fas fa-compass"></i>
+                    <h3>Navigation</h3>
+                    <p>How to move around the system</p>
+                </a>
+                <a href="#features" class="nav-card">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Features</h3>
+                    <p>System capabilities and tools</p>
+                </a>
+                <a href="#troubleshooting" class="nav-card">
+                    <i class="fas fa-tools"></i>
+                    <h3>Troubleshooting</h3>
+                    <p>Common issues and solutions</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Getting Started Section -->
+        <section id="getting-started" class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+                <p>Welcome to Hydro-M! Here's how to get started with the system.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="help-card">
+                    <h3>1. System Overview</h3>
+                    <p>Hydro-M is a comprehensive hydroelectric power monitoring system that provides real-time data for the Ugandan cascade dams including Lake Nalubaale, Kiira HPP, Bujagali HPP, and Isimba HPP.</p>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Real-time monitoring of water levels, dispatch, and discharge</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Predictive analytics and water level forecasting</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>GIS monitoring and spatial data visualization</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bell"></i>
+                            <span>System alarms and alert management</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>2. First Steps</h3>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Familiarize with the Dashboard:</strong> Start by exploring the main dashboard to understand the layout and available data.
+                        </li>
+                        <li>
+                            <strong>Check System Alarms:</strong> Review any active alarms in the right sidebar to understand current system status.
+                        </li>
+                        <li>
+                            <strong>Explore Dam Data:</strong> Use the left sidebar (toggle with menu button) to view detailed information for each dam.
+                        </li>
+                        <li>
+                            <strong>Download Data:</strong> Access the Download Data page to export monitoring data and reports.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Section -->
+        <section id="navigation" class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-compass"></i> Navigation Guide</h2>
+                <p>Learn how to navigate through different sections of the Hydro-M system.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="help-card">
+                    <h3>Main Navigation Bar</h3>
+                    <div class="nav-guide">
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-home"></i> Dashboard</h4>
+                            <p>The main monitoring interface showing real-time data, predictions, and GIS information for all dams.</p>
+                        </div>
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-exclamation-triangle"></i> System Alarms</h4>
+                            <p>View and manage system alarms, alerts, and notifications across all dam facilities.</p>
+                        </div>
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-info-circle"></i> About Us</h4>
+                            <p>Learn about the Hydro-M system, its mission, technology, and key features.</p>
+                        </div>
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-envelope"></i> Contact Us</h4>
+                            <p>Get in touch with the Hydro-M support team for assistance and inquiries.</p>
+                        </div>
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-download"></i> Download Data</h4>
+                            <p>Export raw monitoring data and access pre-generated reports in various formats.</p>
+                        </div>
+                        <div class="nav-item-guide">
+                            <h4><i class="fas fa-question-circle"></i> Help</h4>
+                            <p>Access this help documentation and support resources.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>Sidebar Navigation</h3>
+                    <div class="sidebar-guide">
+                        <div class="sidebar-section">
+                            <h4><i class="fas fa-bars"></i> Left Sidebar (Dam Information)</h4>
+                            <p>Toggle with the menu button to access detailed dam information including:</p>
+                            <ul>
+                                <li>Real-time water levels and status</li>
+                                <li>Dispatch and discharge data</li>
+                                <li>Environmental parameters (humidity, temperature)</li>
+                                <li>Dam-specific alerts and notifications</li>
+                            </ul>
+                        </div>
+                        <div class="sidebar-section">
+                            <h4><i class="fas fa-search"></i> Right Sidebar (Monitoring & Alarms)</h4>
+                            <p>Always visible sidebar providing:</p>
+                            <ul>
+                                <li>Search functionality for dam reservoirs</li>
+                                <li>Monitoring category filters (Real-time, GIS, Predictions)</li>
+                                <li>System alarms and alerts</li>
+                                <li>Quick access to alarm management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> System Features</h2>
+                <p>Explore the powerful features and capabilities of the Hydro-M system.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="help-card">
+                    <h3>Real-Time Monitoring</h3>
+                    <div class="feature-detail">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Live Data Display</h4>
+                            <p>Monitor real-time water levels, power dispatch, discharge rates, and environmental conditions across all cascade dams. Data updates automatically every 10 seconds.</p>
+                            <div class="feature-tips">
+                                <strong>Tips:</strong>
+                                <ul>
+                                    <li>Use the carousel controls to switch between different dams</li>
+                                    <li>Hover over metric cards for detailed information</li>
+                                    <li>Check the live indicator to confirm data freshness</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>Water Level Prediction</h3>
+                    <div class="feature-detail">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>AI-Powered Forecasting</h4>
+                            <p>Access predictive analytics for water level forecasting, including confidence levels, trend analysis, and time period predictions.</p>
+                            <div class="feature-tips">
+                                <strong>Tips:</strong>
+                                <ul>
+                                    <li>Review confidence levels to assess prediction reliability</li>
+                                    <li>Monitor trend indicators for planning decisions</li>
+                                    <li>Use predictions for operational planning and risk assessment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>GIS Monitoring</h3>
+                    <div class="feature-detail">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Spatial Data Visualization</h4>
+                            <p>Geographic Information System monitoring providing spatial context including coordinates, elevation, reservoir area, and satellite status.</p>
+                            <div class="feature-tips">
+                                <strong>Tips:</strong>
+                                <ul>
+                                    <li>Use coordinates for precise location identification</li>
+                                    <li>Monitor satellite status for data reliability</li>
+                                    <li>Track reservoir area changes over time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>System Alarms</h3>
+                    <div class="feature-detail">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Alert Management</h4>
+                            <p>Comprehensive alarm system with different severity levels (Critical, Warning, Info) and filtering capabilities by dam and category.</p>
+                            <div class="feature-tips">
+                                <strong>Tips:</strong>
+                                <ul>
+                                    <li>Filter alarms by severity level for focused attention</li>
+                                    <li>Use dam-specific filters to isolate issues</li>
+                                    <li>Check recently resolved alarms for pattern analysis</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>Data Export & Reports</h3>
+                    <div class="feature-detail">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Comprehensive Data Access</h4>
+                            <p>Download raw monitoring data and access pre-generated reports (Weekly, Monthly, Quarterly, Annual) in multiple formats including CSV, Excel, JSON, and PDF.</p>
+                            <div class="feature-tips">
+                                <strong>Tips:</strong>
+                                <ul>
+                                    <li>Use the modern select dropdowns for efficient data selection</li>
+                                    <li>Preview reports before downloading</li>
+                                    <li>Check recent downloads for quick re-access</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Troubleshooting Section -->
+        <section id="troubleshooting" class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-tools"></i> Troubleshooting</h2>
+                <p>Common issues and their solutions to help you resolve problems quickly.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="help-card">
+                    <h3>Common Issues & Solutions</h3>
+                    <div class="troubleshooting-list">
+                        <div class="issue-item">
+                            <h4><i class="fas fa-exclamation-circle"></i> Data Not Updating</h4>
+                            <p><strong>Problem:</strong> Real-time data appears stale or not updating.</p>
+                            <p><strong>Solution:</strong> Check your internet connection and refresh the page. Data updates every 10 seconds automatically.</p>
+                        </div>
+                        
+                        <div class="issue-item">
+                            <h4><i class="fas fa-exclamation-circle"></i> Sidebar Not Opening</h4>
+                            <p><strong>Problem:</strong> Left sidebar (dam information) doesn't open when clicking the menu button.</p>
+                            <p><strong>Solution:</strong> Ensure you're on a large screen (desktop view). On mobile devices, the sidebar is integrated into the mobile navigation.</p>
+                        </div>
+                        
+                        <div class="issue-item">
+                            <h4><i class="fas fa-exclamation-circle"></i> Download Not Working</h4>
+                            <p><strong>Problem:</strong> Unable to download data or reports.</p>
+                            <p><strong>Solution:</strong> Check that you've selected at least one dam and data type. Ensure your browser allows downloads and check for any popup blockers.</p>
+                        </div>
+                        
+                        <div class="issue-item">
+                            <h4><i class="fas fa-exclamation-circle"></i> Alarms Not Displaying</h4>
+                            <p><strong>Problem:</strong> System alarms are not showing in the right sidebar.</p>
+                            <p><strong>Solution:</strong> Navigate to the System Alarms page to view all alarms. The sidebar shows only recent alarms for quick access.</p>
+                        </div>
+                        
+                        <div class="issue-item">
+                            <h4><i class="fas fa-exclamation-circle"></i> Mobile Layout Issues</h4>
+                            <p><strong>Problem:</strong> Layout appears broken or difficult to use on mobile devices.</p>
+                            <p><strong>Solution:</strong> Use the mobile navigation menu (hamburger button) to access all features. The layout automatically adapts for mobile screens.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h3>Performance Tips</h3>
+                    <div class="performance-tips">
+                        <div class="tip-item">
+                            <h4><i class="fas fa-lightbulb"></i> Optimize Your Experience</h4>
+                            <ul>
+                                <li><strong>Use a modern browser:</strong> Chrome, Firefox, Safari, or Edge for best performance</li>
+                                <li><strong>Enable JavaScript:</strong> Required for all interactive features</li>
+                                <li><strong>Check internet speed:</strong> Stable connection recommended for real-time data</li>
+                                <li><strong>Clear browser cache:</strong> If experiencing display issues</li>
+                                <li><strong>Use desktop view:</strong> For full feature access and better data visualization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+                <p>Quick answers to common questions about the Hydro-M system.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h3>How often is the data updated?</h3>
+                        <p>Real-time data is updated every 10 seconds automatically. Historical data and reports are generated based on the selected time periods.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Can I access the system on mobile devices?</h3>
+                        <p>Yes! The system is fully responsive and optimized for mobile devices. Use the mobile navigation menu to access all features.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What data formats are available for download?</h3>
+                        <p>You can download data in CSV, Excel, JSON, and PDF formats. Reports are primarily available in PDF format.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How do I filter alarms by specific dams?</h3>
+                        <p>On the System Alarms page, use the dam filter dropdown to select specific dams and view only their associated alarms.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>What do the different alarm severity levels mean?</h3>
+                        <p><strong>Critical:</strong> Immediate attention required, <strong>Warning:</strong> Monitor closely, <strong>Info:</strong> Informational alerts.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How accurate are the water level predictions?</h3>
+                        <p>Predictions include confidence levels to indicate reliability. Higher confidence levels indicate more reliable predictions.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Can I export data for specific time periods?</h3>
+                        <p>Yes, you can select custom date ranges when downloading raw data. Reports are available for standard periods (weekly, monthly, quarterly, annual).</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>How do I contact support if I need help?</h3>
+                        <p>Use the Contact Us page to reach the Hydro-M support team. You can also refer to this Help section for common issues and solutions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Support -->
+        <section class="help-section">
+            <div class="section-header">
+                <h2><i class="fas fa-headset"></i> Need More Help?</h2>
+                <p>If you couldn't find the answer you're looking for, our support team is here to help.</p>
+            </div>
+            
+            <div class="help-content">
+                <div class="contact-support">
+                    <div class="support-card">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email Support</h3>
+                        <p>Send us a detailed message with your question or issue.</p>
+                        <a href="#" class="btn-support">Contact Support</a>
+                    </div>
+                    
+                    <div class="support-card">
+                        <i class="fas fa-phone"></i>
+                        <h3>Phone Support</h3>
+                        <p>Call our technical support team during business hours.</p>
+                        <a href="#" class="btn-support">Call Now</a>
+                    </div>
+                    
+                    <div class="support-card">
+                        <i class="fas fa-book"></i>
+                        <h3>Documentation</h3>
+                        <p>Access detailed technical documentation and user guides.</p>
+                        <a href="#" class="btn-support">View Docs</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+        <div class="sidebar-card">
+            <!-- Search Section -->
+            <div class="search-section">
+                <form class="search-form">
+                    <input type="text" placeholder="Search dam reservoirs..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Monitoring Categories -->
+            <div class="categories-section">
+                <h4>Monitoring Category</h4>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <a href="#">
+                            <i class="fas fa-clock"></i>
+                            Real-time
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-map-marker-alt"></i>
+                            GIS Monitoring
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-chart-line"></i>
+                            Predictions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Alarms Section -->
+            <div class="alarms-section">
+                <div class="alarms-header">
+                    <h4>System Alarms</h4>
+                    <a href="#" class="alarms-link">View All (5)</a>
+                </div>
+                <div class="alarms-list">
+                    <div class="alarm-item critical">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Nalubaale HPP</h6>
+                            <p>The water level has passed the normal and expected level.</p>
+                            <span class="alarm-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Kiira HPP</h6>
+                            <p>Reservoir past active volume just as expected.</p>
+                            <span class="alarm-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Bujagali HPP</h6>
+                            <p>Water level approaching critical threshold.</p>
+                            <span class="alarm-time">8 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Navigation JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileNav.classList.toggle('show');
+            });
+
+            // User dropdown toggle
+            const userBtn = document.getElementById('userBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-dropdown')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+
+            // Close mobile nav when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.navbar') && !e.target.closest('.mobile-nav')) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Navigation link active state
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                });
+            });
+
+            // Close mobile nav on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Smooth navigation handling
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the href attribute
+                    const href = this.getAttribute('href');
+                    
+                    // If it's not just a "#", handle navigation
+                    if (href && href !== '#') {
+                        // Here you would typically navigate to the page
+                        console.log('Navigating to:', href);
+                    }
+                });
+            });
+
+            // Add loading animation to logo
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Dam sidebar functionality
+            const damItems = document.querySelectorAll('.dam-item');
+            
+            damItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all dam items
+                    damItems.forEach(dam => dam.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get dam name for navigation
+                    const damName = this.querySelector('h4').textContent;
+                    console.log('Selected dam:', damName);
+                    
+                    // Here you would typically navigate to the dam's detail page
+                    // or update the main content area
+                });
+            });
+
+            // Real-time clock functionality
+            function updateClock() {
+                const now = new Date();
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                document.getElementById('dayname').textContent = days[now.getDay()];
+                document.getElementById('month').textContent = months[now.getMonth()];
+                document.getElementById('daynum').textContent = now.getDate();
+                document.getElementById('year').textContent = now.getFullYear();
+                
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                const period = hours >= 12 ? 'PM' : 'AM';
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                
+                document.getElementById('hour').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                document.getElementById('period').textContent = period;
+            }
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock(); // Initial call
+
+            // Dam card interactions
+            const damCards = document.querySelectorAll('.dam-card');
+            damCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    damCards.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    const damId = this.getAttribute('data-dam');
+                    const damName = this.querySelector('h4').textContent.split(' - ')[0];
+                    
+                    // Show notification
+                    showNotification('Dam Selected', `${damName} is now active`, 'info');
+                    
+                    // Update dam sidebar if it exists
+                    updateDamSidebar(damId, damName);
+                });
+            });
+
+            // Enhanced metric animations
+            function animateMetricValue(element, newValue, oldValue) {
+                if (!element) return;
+                
+                const startValue = parseInt(oldValue) || 0;
+                const endValue = parseInt(newValue) || 0;
+                const duration = 1000; // 1 second
+                const startTime = performance.now();
+                
+                function updateValue(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutQuart);
+                    
+                    // Update the element with the appropriate unit
+                    const unit = element.textContent.match(/[a-zA-Z%°]+/)?.[0] || '';
+                    element.textContent = currentValue + unit;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateValue);
+                    }
+                }
+                
+                requestAnimationFrame(updateValue);
+            }
+
+            // Enhanced dam data updates with animations
+            function updateDamData() {
+                const dams = [
+                    { id: 1, name: 'Bujagali' },
+                    { id: 2, name: 'Karuma' },
+                    { id: 3, name: 'Isimba' }
+                ];
+
+                dams.forEach(dam => {
+                    // Simulate realistic data changes
+                    const waterLevel = Math.floor(Math.random() * 200) + 1100;
+                    const humidity = Math.floor(Math.random() * 20) + 70;
+                    const dispatch = Math.floor(Math.random() * 100) + 150;
+                    const temperature = Math.floor(Math.random() * 8) + 22;
+                    const discharge = Math.floor(Math.random() * 200) + 700;
+                    const precipitation = Math.floor(Math.random() * 10);
+
+                    // Get current values for animation
+                    const waterLevelEl = document.getElementById(`waterlevel-${dam.id}`);
+                    const humidityEl = document.getElementById(`humidity-${dam.id}`);
+                    const dispatchEl = document.getElementById(`dispatch-${dam.id}`);
+                    const temperatureEl = document.getElementById(`temperature-${dam.id}`);
+                    const dischargeEl = document.getElementById(`discharge-${dam.id}`);
+                    const precipitationEl = document.getElementById(`precipitation-${dam.id}`);
+
+                    // Animate value changes
+                    if (waterLevelEl) {
+                        const oldValue = waterLevelEl.textContent.replace('mm', '');
+                        animateMetricValue(waterLevelEl, waterLevel, oldValue);
+                    }
+                    if (humidityEl) {
+                        const oldValue = humidityEl.textContent.replace('%', '');
+                        animateMetricValue(humidityEl, humidity, oldValue);
+                    }
+                    if (dispatchEl) {
+                        const oldValue = dispatchEl.textContent.replace('MW', '');
+                        animateMetricValue(dispatchEl, dispatch, oldValue);
+                    }
+                    if (temperatureEl) {
+                        const oldValue = temperatureEl.textContent.replace('°C', '');
+                        animateMetricValue(temperatureEl, temperature, oldValue);
+                    }
+                    if (dischargeEl) {
+                        const oldValue = dischargeEl.textContent.replace('m³/s', '');
+                        animateMetricValue(dischargeEl, discharge, oldValue);
+                    }
+                    if (precipitationEl) {
+                        const oldValue = precipitationEl.textContent.replace('mm', '');
+                        animateMetricValue(precipitationEl, precipitation, oldValue);
+                    }
+                });
+            }
+
+            // Update dam data every 10 seconds
+            setInterval(updateDamData, 10000);
+
+            // Function to update dam sidebar (placeholder for future integration)
+            function updateDamSidebar(damId, damName) {
+                console.log(`Updating sidebar for ${damName} (ID: ${damId})`);
+                // This function can be expanded to update the dam sidebar with detailed information
+            }
+
+            // Add pulse effect to live indicator
+            function addPulseEffect() {
+                const liveIndicator = document.querySelector('.live-indicator');
+                if (liveIndicator) {
+                    liveIndicator.style.animation = 'pulse 2s infinite';
+                }
+            }
+
+            // Enhanced status indicators
+            function updateStatusIndicators() {
+                const statusIndicators = document.querySelectorAll('.status-indicator');
+                statusIndicators.forEach(indicator => {
+                    // Randomly change status for demonstration
+                    const statuses = ['online', 'warning', 'error'];
+                    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    // Only change occasionally (10% chance)
+                    if (Math.random() < 0.1) {
+                        indicator.className = `status-indicator ${randomStatus}`;
+                        
+                        const damCard = indicator.closest('.dam-card');
+                        const damName = damCard.querySelector('h4').textContent.split(' - ')[0];
+                        
+                        if (randomStatus === 'error') {
+                            showNotification(`${damName} - Critical Alert`, 'System error detected', 'error');
+                        } else if (randomStatus === 'warning') {
+                            showNotification(`${damName} - Warning`, 'System warning detected', 'warning');
+                        }
+                    }
+                });
+            }
+
+            // Initialize enhanced features
+            addPulseEffect();
+            
+            // Update status indicators every 30 seconds
+            setInterval(updateStatusIndicators, 30000);
+
+            // Chart placeholder interactions
+            const chartPlaceholders = document.querySelectorAll('.chart-placeholder');
+            chartPlaceholders.forEach(placeholder => {
+                placeholder.addEventListener('click', function() {
+                    const cardTitle = this.closest('.prediction-card').querySelector('h3').textContent;
+                    showNotification('Chart Interaction', `Opening detailed chart for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // GIS card interactions
+            const gisCards = document.querySelectorAll('.gis-card');
+            gisCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const cardTitle = this.querySelector('h3').textContent;
+                    showNotification('GIS Data', `Opening detailed GIS view for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Theme switching functionality
+        });
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#0896FC' : '#10b981'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Example usage
+        // showNotification('Welcome to Hydro-M!', 'success');
+
+        // Help page smooth scrolling
+        const helpNavLinks = document.querySelectorAll('.nav-card[href^="#"]');
+        helpNavLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll spy for help sections
+        const helpSections = document.querySelectorAll('.help-section');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '-20% 0px -80% 0px'
+        };
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    // Update active nav card if needed
+                    helpNavLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        helpSections.forEach(section => {
+            sectionObserver.observe(section);
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="uegcl-logo.png" alt="UEGCL Logo">
+            </div>
+            <div class="footer-text">
+                <p>2023 Hydro-M, All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,2822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro-M Navigation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #374151;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-toggle:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: #374151;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #0896FC;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .user-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #0896FC;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-radius: 0.25rem;
+            margin: 0.25rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0896FC;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .login-btn:hover {
+            background: #0678d4;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 70px;
+            left: -100%;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .mobile-nav.show {
+            left: 0;
+        }
+
+        /* Dam Sidebar Styles */
+        .dam-sidebar {
+            padding: 1rem;
+        }
+
+        .dam-sidebar-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-sidebar-header h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-sidebar-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .dam-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dam-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dam-item:hover {
+            border-color: #0896FC;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .dam-item.featured {
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            border-color: #0896FC;
+        }
+
+        .dam-item.featured .dam-info h4,
+        .dam-item.featured .dam-info p,
+        .dam-item.featured .dam-status {
+            color: white;
+        }
+
+        .dam-icon {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dam-item.featured .dam-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dam-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .dam-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .dam-info .location {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .status-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .dam-item.featured .status-label,
+        .dam-item.featured .status-value {
+            color: white;
+        }
+
+        /* Mobile Navigation Menu (hidden on large screens) */
+        .mobile-nav-menu {
+            list-style: none;
+            padding: 1rem;
+            display: none;
+        }
+
+        .mobile-nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .mobile-nav-link.active {
+            background-color: #0896FC;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .dam-sidebar {
+                display: none;
+            }
+
+            .mobile-nav-menu {
+                display: block;
+            }
+        }
+
+        /* Content area for testing */
+        .content {
+            margin-top: 90px;
+            padding: 2rem;
+            margin-right: 320px; /* Make space for right sidebar */
+        }
+
+        .content h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .content p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        /* Right Sidebar Styles */
+        .right-sidebar {
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 998;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-form {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .categories-section h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-item.active {
+            background-color: #0896FC;
+        }
+
+        .category-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .category-item:hover a {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .category-item.active a {
+            color: white;
+        }
+
+        .category-item i {
+            font-size: 1rem;
+        }
+
+        /* Alarms Section */
+        .alarms-section {
+            padding: 1.5rem;
+        }
+
+        .alarms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .alarms-header h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .alarms-link {
+            color: #0896FC;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .alarms-link:hover {
+            color: #0678d4;
+        }
+
+        .alarms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .alarm-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-item.critical {
+            border-left: 3px solid #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alarm-item.warning {
+            border-left: 3px solid #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alarm-icon {
+            color: #6b7280;
+            font-size: 1rem;
+            margin-top: 0.125rem;
+        }
+
+        .alarm-item.critical .alarm-icon {
+            color: #ef4444;
+        }
+
+        .alarm-item.warning .alarm-icon {
+            color: #f59e0b;
+        }
+
+        .alarm-content h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .alarm-content p {
+            font-size: 0.7rem;
+            color: #6b7280;
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .alarm-time {
+            font-size: 0.65rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                width: 280px;
+            }
+            
+            .content {
+                margin-right: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .right-sidebar {
+                display: none;
+            }
+            
+            .content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 0;
+            margin-right: 320px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s ease;
+            background: var(--bg-secondary);
+        }
+
+        .main-content.with-sidebar {
+            margin-left: 280px;
+        }
+
+        /* Blue Card */
+        .blue-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 213px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .blue-card-left {
+            background: #0896FC;
+            width: 200px;
+            padding: 2rem;
+        }
+
+        .blue-card-right {
+            background: white;
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid var(--border-primary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0896FC, #3b82f6, #0896FC);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .content-title::before {
+            content: '🚨';
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .content-subtitle {
+            color: var(--text-tertiary);
+            font-size: 1.125rem;
+            font-weight: 400;
+            line-height: 1.6;
+            position: relative;
+            border-left: 3px solid #0896FC;
+            background: rgba(8, 150, 252, 0.05);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Monitoring Section Styles */
+        .monitoring-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Monitoring Grid */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Date/Time Card */
+        .datetime-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .datetime-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .datetime-content {
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Dam Status Cards */
+        .dam-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dam-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dam-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+            transform: translateY(-2px);
+        }
+
+        .dam-card.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+        }
+
+        .dam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .dam-header h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning-color);
+        }
+
+        .status-indicator.error {
+            background: var(--error-color);
+        }
+
+        .dam-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-item:hover {
+            background: var(--bg-secondary);
+            transform: scale(1.02);
+        }
+
+        .metric-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Prediction Grid */
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .prediction-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-placeholder small {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        /* GIS Grid */
+        .gis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gis-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .gis-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .gis-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design for Monitoring */
+        @media (max-width: 1200px) {
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .datetime-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .dam-status-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* System Alarms Page Styles */
+        .alarm-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+            min-height: 100px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.critical {
+            border-left-color: #ef4444;
+        }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.info {
+            border-left-color: #0896FC;
+        }
+
+        .stat-card.resolved {
+            border-left-color: #10b981;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .stat-card.critical .stat-icon {
+            background: #ef4444;
+        }
+
+        .stat-card.warning .stat-icon {
+            background: #f59e0b;
+        }
+
+        .stat-card.info .stat-icon {
+            background: #0896FC;
+        }
+
+        .stat-card.resolved .stat-icon {
+            background: #10b981;
+        }
+
+        .stat-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stat-content h3 {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.2rem;
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 0.7rem;
+            color: #10b981;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-card.critical .stat-change {
+            color: #ef4444;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1200px) {
+            .alarm-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .alarm-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .category-tabs {
+                gap: 0.5rem;
+            }
+        }
+
+        .alarm-categories {
+            margin-bottom: 2rem;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #374151;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab-btn:hover {
+            border-color: #0896FC;
+            color: #0896FC;
+        }
+
+        .tab-btn.active {
+            background: #0896FC;
+            border-color: #0896FC;
+            color: white;
+        }
+
+        .dam-alarms-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .dam-filter,
+        .severity-filter {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .dam-alarm-group {
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .dam-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dam-header h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dam-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .dam-status.critical {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .dam-status.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .dam-status.info {
+            background: rgba(8, 150, 252, 0.1);
+            color: #0896FC;
+        }
+
+        .alarm-list {
+            padding: 1.5rem;
+        }
+
+        .alarm-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .alarm-card.critical {
+            border-left: 4px solid #ef4444;
+        }
+
+        .alarm-card.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .alarm-card.info {
+            border-left: 4px solid #0896FC;
+        }
+
+        .alarm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .alarm-severity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .alarm-card.critical .alarm-severity {
+            color: #ef4444;
+        }
+
+        .alarm-card.warning .alarm-severity {
+            color: #f59e0b;
+        }
+
+        .alarm-card.info .alarm-severity {
+            color: #0896FC;
+        }
+
+        .alarm-time {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .alarm-content {
+            padding: 1.5rem;
+        }
+
+        .alarm-content h4 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .alarm-content p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .alarm-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric {
+            background: #f3f4f6;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .alarm-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .action-btn.acknowledge {
+            color: #0896FC;
+            border-color: #0896FC;
+        }
+
+        .action-btn.acknowledge:hover {
+            background: #0896FC;
+            color: white;
+        }
+
+        .action-btn.resolve {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        .action-btn.resolve:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn.details {
+            color: #6b7280;
+        }
+
+        .action-btn.details:hover {
+            background: #f3f4f6;
+        }
+
+        .resolved-alarms-section {
+            margin-bottom: 2rem;
+        }
+
+        .view-all-btn {
+            padding: 0.5rem 1rem;
+            background: #0896FC;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: #0678d4;
+        }
+
+        .resolved-alarms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .resolved-alarm {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .resolved-alarm:hover {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .resolved-icon {
+            color: #10b981;
+            font-size: 1.25rem;
+        }
+
+        .resolved-content h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .resolved-content p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .resolved-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design for Alarms */
+        @media (max-width: 768px) {
+            .alarm-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-tabs {
+                flex-direction: column;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .alarm-actions {
+                flex-direction: column;
+            }
+
+            .alarm-metrics {
+                flex-direction: column;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: white;
+            border-top: 3px solid #0896FC;
+            padding: 0.75rem 2rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo img {
+            height: 25px;
+            width: auto;
+        }
+
+        .footer-text p {
+            color: #0896FC;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+            
+            .footer-logo img {
+                height: 20px;
+            }
+            
+            .footer-text p {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="./home.html" class="logo">
+                <img src="logo.png" alt="Hydro-M Logo">
+            </a>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="./home.html" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="./system-alarms.html" class="nav-link active">System Alarms</a>
+            </li>
+            <li class="nav-item">
+                <a href="./about-us.html" class="nav-link">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Contact Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./download-data.html" class="nav-link">Download Data</a>
+            </li>
+            <li class="nav-item">
+                <a href="./help.html" class="nav-link">Help</a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user"></i>
+                    <span>John Doe</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="dam-sidebar">
+            <div class="dam-sidebar-header">
+                <h3>THE CASCADE</h3>
+                <p>Real-time dam status and data</p>
+            </div>
+            <div class="dam-list">
+                <a href="#" class="dam-item featured">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Lake Nalubaale</h4>
+                        <p class="location">Jinja Pier</p>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1500mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Kiira HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1480mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">200MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">520 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Bujagali HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1520mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">250MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">380 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Isimba HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1450mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">180MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">450 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="./home.html" class="mobile-nav-link">Dashboard</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./system-alarms.html" class="mobile-nav-link active">System Alarms</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./about-us.html" class="mobile-nav-link">About Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#" class="mobile-nav-link">Contact Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./download-data.html" class="mobile-nav-link">Download Data</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./help.html" class="mobile-nav-link">Help</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Header Section -->
+        <div class="content-header">
+            <h1 class="content-title">System Alarms</h1>
+            <p class="content-subtitle">Real-time monitoring and alert management for the entire cascade</p>
+        </div>
+
+        <!-- Alarm Statistics Cards -->
+        <div class="alarm-stats-grid">
+            <div class="stat-card critical">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Critical Alarms</h3>
+                    <p class="stat-number">3</p>
+                    <span class="stat-change">+1 from yesterday</span>
+                </div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Warning Alarms</h3>
+                    <p class="stat-number">7</p>
+                    <span class="stat-change">-2 from yesterday</span>
+                </div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Info Alarms</h3>
+                    <p class="stat-number">12</p>
+                    <span class="stat-change">+3 from yesterday</span>
+                </div>
+            </div>
+            <div class="stat-card resolved">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Resolved Today</h3>
+                    <p class="stat-number">8</p>
+                    <span class="stat-change">+2 from yesterday</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alarm Categories Section -->
+        <div class="alarm-categories">
+            <div class="section-header">
+                <h2>Alarm Categories</h2>
+                <div class="live-indicator">
+                    <div class="pulse"></div>
+                    <span>Live Updates</span>
+                </div>
+            </div>
+            
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="all">All Alarms (22)</button>
+                <button class="tab-btn" data-category="water-level">Water Level (8)</button>
+                <button class="tab-btn" data-category="discharge">Discharge (5)</button>
+                <button class="tab-btn" data-category="power">Power Generation (4)</button>
+                <button class="tab-btn" data-category="equipment">Equipment (3)</button>
+                <button class="tab-btn" data-category="environmental">Environmental (2)</button>
+            </div>
+        </div>
+
+        <!-- Dam-Specific Alarms -->
+        <div class="dam-alarms-section">
+            <div class="section-header">
+                <h2>Dam-Specific Alarms</h2>
+                <div class="filter-controls">
+                    <select class="dam-filter">
+                        <option value="all">All Dams</option>
+                        <option value="nalubaale">Lake Nalubaale</option>
+                        <option value="kiira">Kiira HPP</option>
+                        <option value="bujagali">Bujagali HPP</option>
+                        <option value="isimba">Isimba HPP</option>
+                    </select>
+                    <select class="severity-filter">
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="warning">Warning</option>
+                        <option value="info">Info</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lake Nalubaale Alarms -->
+            <div class="dam-alarm-group" data-dam="nalubaale">
+                <div class="dam-header">
+                    <h3><i class="fas fa-water"></i> Lake Nalubaale</h3>
+                    <span class="dam-status critical">3 Active Alarms</span>
+                </div>
+                
+                <div class="alarm-list">
+                    <div class="alarm-card critical" data-category="water-level">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Critical</span>
+                            </div>
+                            <div class="alarm-time">2 minutes ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Water Level Exceeded Critical Threshold</h4>
+                            <p>The water level has reached 1135.2m, which is 15.2m above the normal operating level. Immediate action required to prevent overflow.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Current Level:</strong> 1135.2m</span>
+                                <span class="metric"><strong>Normal Level:</strong> 1120.0m</span>
+                                <span class="metric"><strong>Critical Level:</strong> 1135.0m</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="alarm-card warning" data-category="discharge">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Warning</span>
+                            </div>
+                            <div class="alarm-time">15 minutes ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Discharge Rate Approaching Limit</h4>
+                            <p>Current discharge rate of 850 m³/s is approaching the maximum safe limit of 900 m³/s. Monitor closely.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Current Discharge:</strong> 850 m³/s</span>
+                                <span class="metric"><strong>Safe Limit:</strong> 900 m³/s</span>
+                                <span class="metric"><strong>Utilization:</strong> 94.4%</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="alarm-card info" data-category="power">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Info</span>
+                            </div>
+                            <div class="alarm-time">1 hour ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Power Generation Efficiency Alert</h4>
+                            <p>Power generation efficiency has dropped to 87.2%, which is below the optimal range of 90-95%.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Current Efficiency:</strong> 87.2%</span>
+                                <span class="metric"><strong>Optimal Range:</strong> 90-95%</span>
+                                <span class="metric"><strong>Power Output:</strong> 180 MW</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiira HPP Alarms -->
+            <div class="dam-alarm-group" data-dam="kiira">
+                <div class="dam-header">
+                    <h3><i class="fas fa-bolt"></i> Kiira HPP</h3>
+                    <span class="dam-status warning">2 Active Alarms</span>
+                </div>
+                
+                <div class="alarm-list">
+                    <div class="alarm-card warning" data-category="equipment">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Warning</span>
+                            </div>
+                            <div class="alarm-time">25 minutes ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Turbine Vibration Levels Elevated</h4>
+                            <p>Turbine #2 vibration levels have increased to 8.5 mm/s, approaching the warning threshold of 10 mm/s.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Current Vibration:</strong> 8.5 mm/s</span>
+                                <span class="metric"><strong>Warning Threshold:</strong> 10 mm/s</span>
+                                <span class="metric"><strong>Normal Range:</strong> 2-5 mm/s</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+
+                    <div class="alarm-card info" data-category="environmental">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Info</span>
+                            </div>
+                            <div class="alarm-time">2 hours ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Water Quality Parameters Alert</h4>
+                            <p>Dissolved oxygen levels have decreased to 6.2 mg/L, which is within acceptable range but trending downward.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Dissolved Oxygen:</strong> 6.2 mg/L</span>
+                                <span class="metric"><strong>Acceptable Range:</strong> 5.0-8.0 mg/L</span>
+                                <span class="metric"><strong>pH Level:</strong> 7.1</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bujagali HPP Alarms -->
+            <div class="dam-alarm-group" data-dam="bujagali">
+                <div class="dam-header">
+                    <h3><i class="fas fa-industry"></i> Bujagali HPP</h3>
+                    <span class="dam-status warning">1 Active Alarm</span>
+                </div>
+                
+                <div class="alarm-list">
+                    <div class="alarm-card warning" data-category="water-level">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Warning</span>
+                            </div>
+                            <div class="alarm-time">45 minutes ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Water Level Approaching Critical Threshold</h4>
+                            <p>Water level is at 1128.5m, approaching the critical threshold of 1130.0m. Consider increasing discharge rate.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Current Level:</strong> 1128.5m</span>
+                                <span class="metric"><strong>Critical Threshold:</strong> 1130.0m</span>
+                                <span class="metric"><strong>Margin:</strong> 1.5m</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Isimba HPP Alarms -->
+            <div class="dam-alarm-group" data-dam="isimba">
+                <div class="dam-header">
+                    <h3><i class="fas fa-mountain"></i> Isimba HPP</h3>
+                    <span class="dam-status info">1 Active Alarm</span>
+                </div>
+                
+                <div class="alarm-list">
+                    <div class="alarm-card info" data-category="power">
+                        <div class="alarm-header">
+                            <div class="alarm-severity">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Info</span>
+                            </div>
+                            <div class="alarm-time">3 hours ago</div>
+                        </div>
+                        <div class="alarm-content">
+                            <h4>Scheduled Maintenance Reminder</h4>
+                            <p>Unit #3 scheduled maintenance is due in 48 hours. Prepare for planned shutdown.</p>
+                            <div class="alarm-metrics">
+                                <span class="metric"><strong>Maintenance Due:</strong> 48 hours</span>
+                                <span class="metric"><strong>Unit:</strong> #3</span>
+                                <span class="metric"><strong>Duration:</strong> 6 hours</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="action-btn acknowledge">Acknowledge</button>
+                            <button class="action-btn resolve">Resolve</button>
+                            <button class="action-btn details">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Resolved Alarms -->
+        <div class="resolved-alarms-section">
+            <div class="section-header">
+                <h2>Recently Resolved Alarms</h2>
+                <button class="view-all-btn">View All History</button>
+            </div>
+            
+            <div class="resolved-alarms-list">
+                <div class="resolved-alarm">
+                    <div class="resolved-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="resolved-content">
+                        <h4>Kiira HPP - Water Level Normalized</h4>
+                        <p>Water level returned to normal operating range (1120.5m)</p>
+                        <span class="resolved-time">Resolved 2 hours ago</span>
+                    </div>
+                </div>
+                
+                <div class="resolved-alarm">
+                    <div class="resolved-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="resolved-content">
+                        <h4>Bujagali HPP - Discharge Rate Stabilized</h4>
+                        <p>Discharge rate normalized to 380 m³/s within safe limits</p>
+                        <span class="resolved-time">Resolved 4 hours ago</span>
+                    </div>
+                </div>
+                
+                <div class="resolved-alarm">
+                    <div class="resolved-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="resolved-content">
+                        <h4>Isimba HPP - Equipment Maintenance Completed</h4>
+                        <p>Preventive maintenance on Unit #1 completed successfully</p>
+                        <span class="resolved-time">Resolved 6 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+        <div class="sidebar-card">
+            <!-- Search Section -->
+            <div class="search-section">
+                <form class="search-form">
+                    <input type="text" placeholder="Search dam reservoirs..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Monitoring Categories -->
+            <div class="categories-section">
+                <h4>Monitoring Category</h4>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <a href="#">
+                            <i class="fas fa-clock"></i>
+                            Real-time
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-map-marker-alt"></i>
+                            GIS Monitoring
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-chart-line"></i>
+                            Predictions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Alarms Section -->
+            <div class="alarms-section">
+                <div class="alarms-header">
+                    <h4>System Alarms</h4>
+                    <a href="#" class="alarms-link">View All (5)</a>
+                </div>
+                <div class="alarms-list">
+                    <div class="alarm-item critical">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Nalubaale HPP</h6>
+                            <p>The water level has passed the normal and expected level.</p>
+                            <span class="alarm-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Kiira HPP</h6>
+                            <p>Reservoir past active volume just as expected.</p>
+                            <span class="alarm-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Bujagali HPP</h6>
+                            <p>Water level approaching critical threshold.</p>
+                            <span class="alarm-time">8 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Navigation JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileNav.classList.toggle('show');
+            });
+
+            // User dropdown toggle
+            const userBtn = document.getElementById('userBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-dropdown')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+
+            // Close mobile nav when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.navbar') && !e.target.closest('.mobile-nav')) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Navigation link active state
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                });
+            });
+
+            // Close mobile nav on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Smooth navigation handling
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the href attribute
+                    const href = this.getAttribute('href');
+                    
+                    // If it's not just a "#", handle navigation
+                    if (href && href !== '#') {
+                        // Here you would typically navigate to the page
+                        console.log('Navigating to:', href);
+                    }
+                });
+            });
+
+            // Add loading animation to logo
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Dam sidebar functionality
+            const damItems = document.querySelectorAll('.dam-item');
+            
+            damItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all dam items
+                    damItems.forEach(dam => dam.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get dam name for navigation
+                    const damName = this.querySelector('h4').textContent;
+                    console.log('Selected dam:', damName);
+                    
+                    // Here you would typically navigate to the dam's detail page
+                    // or update the main content area
+                });
+            });
+
+            // Real-time clock functionality
+            function updateClock() {
+                const now = new Date();
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                document.getElementById('dayname').textContent = days[now.getDay()];
+                document.getElementById('month').textContent = months[now.getMonth()];
+                document.getElementById('daynum').textContent = now.getDate();
+                document.getElementById('year').textContent = now.getFullYear();
+                
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                const period = hours >= 12 ? 'PM' : 'AM';
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                
+                document.getElementById('hour').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                document.getElementById('period').textContent = period;
+            }
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock(); // Initial call
+
+            // Dam card interactions
+            const damCards = document.querySelectorAll('.dam-card');
+            damCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    damCards.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    const damId = this.getAttribute('data-dam');
+                    const damName = this.querySelector('h4').textContent.split(' - ')[0];
+                    
+                    // Show notification
+                    showNotification('Dam Selected', `${damName} is now active`, 'info');
+                    
+                    // Update dam sidebar if it exists
+                    updateDamSidebar(damId, damName);
+                });
+            });
+
+            // Enhanced metric animations
+            function animateMetricValue(element, newValue, oldValue) {
+                if (!element) return;
+                
+                const startValue = parseInt(oldValue) || 0;
+                const endValue = parseInt(newValue) || 0;
+                const duration = 1000; // 1 second
+                const startTime = performance.now();
+                
+                function updateValue(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutQuart);
+                    
+                    // Update the element with the appropriate unit
+                    const unit = element.textContent.match(/[a-zA-Z%°]+/)?.[0] || '';
+                    element.textContent = currentValue + unit;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateValue);
+                    }
+                }
+                
+                requestAnimationFrame(updateValue);
+            }
+
+            // Enhanced dam data updates with animations
+            function updateDamData() {
+                const dams = [
+                    { id: 1, name: 'Bujagali' },
+                    { id: 2, name: 'Karuma' },
+                    { id: 3, name: 'Isimba' }
+                ];
+
+                dams.forEach(dam => {
+                    // Simulate realistic data changes
+                    const waterLevel = Math.floor(Math.random() * 200) + 1100;
+                    const humidity = Math.floor(Math.random() * 20) + 70;
+                    const dispatch = Math.floor(Math.random() * 100) + 150;
+                    const temperature = Math.floor(Math.random() * 8) + 22;
+                    const discharge = Math.floor(Math.random() * 200) + 700;
+                    const precipitation = Math.floor(Math.random() * 10);
+
+                    // Get current values for animation
+                    const waterLevelEl = document.getElementById(`waterlevel-${dam.id}`);
+                    const humidityEl = document.getElementById(`humidity-${dam.id}`);
+                    const dispatchEl = document.getElementById(`dispatch-${dam.id}`);
+                    const temperatureEl = document.getElementById(`temperature-${dam.id}`);
+                    const dischargeEl = document.getElementById(`discharge-${dam.id}`);
+                    const precipitationEl = document.getElementById(`precipitation-${dam.id}`);
+
+                    // Animate value changes
+                    if (waterLevelEl) {
+                        const oldValue = waterLevelEl.textContent.replace('mm', '');
+                        animateMetricValue(waterLevelEl, waterLevel, oldValue);
+                    }
+                    if (humidityEl) {
+                        const oldValue = humidityEl.textContent.replace('%', '');
+                        animateMetricValue(humidityEl, humidity, oldValue);
+                    }
+                    if (dispatchEl) {
+                        const oldValue = dispatchEl.textContent.replace('MW', '');
+                        animateMetricValue(dispatchEl, dispatch, oldValue);
+                    }
+                    if (temperatureEl) {
+                        const oldValue = temperatureEl.textContent.replace('°C', '');
+                        animateMetricValue(temperatureEl, temperature, oldValue);
+                    }
+                    if (dischargeEl) {
+                        const oldValue = dischargeEl.textContent.replace('m³/s', '');
+                        animateMetricValue(dischargeEl, discharge, oldValue);
+                    }
+                    if (precipitationEl) {
+                        const oldValue = precipitationEl.textContent.replace('mm', '');
+                        animateMetricValue(precipitationEl, precipitation, oldValue);
+                    }
+                });
+            }
+
+            // Update dam data every 10 seconds
+            setInterval(updateDamData, 10000);
+
+            // Function to update dam sidebar (placeholder for future integration)
+            function updateDamSidebar(damId, damName) {
+                console.log(`Updating sidebar for ${damName} (ID: ${damId})`);
+                // This function can be expanded to update the dam sidebar with detailed information
+            }
+
+            // Add pulse effect to live indicator
+            function addPulseEffect() {
+                const liveIndicator = document.querySelector('.live-indicator');
+                if (liveIndicator) {
+                    liveIndicator.style.animation = 'pulse 2s infinite';
+                }
+            }
+
+            // Enhanced status indicators
+            function updateStatusIndicators() {
+                const statusIndicators = document.querySelectorAll('.status-indicator');
+                statusIndicators.forEach(indicator => {
+                    // Randomly change status for demonstration
+                    const statuses = ['online', 'warning', 'error'];
+                    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    // Only change occasionally (10% chance)
+                    if (Math.random() < 0.1) {
+                        indicator.className = `status-indicator ${randomStatus}`;
+                        
+                        const damCard = indicator.closest('.dam-card');
+                        const damName = damCard.querySelector('h4').textContent.split(' - ')[0];
+                        
+                        if (randomStatus === 'error') {
+                            showNotification(`${damName} - Critical Alert`, 'System error detected', 'error');
+                        } else if (randomStatus === 'warning') {
+                            showNotification(`${damName} - Warning`, 'System warning detected', 'warning');
+                        }
+                    }
+                });
+            }
+
+            // Initialize enhanced features
+            addPulseEffect();
+            
+            // Update status indicators every 30 seconds
+            setInterval(updateStatusIndicators, 30000);
+
+            // Chart placeholder interactions
+            const chartPlaceholders = document.querySelectorAll('.chart-placeholder');
+            chartPlaceholders.forEach(placeholder => {
+                placeholder.addEventListener('click', function() {
+                    const cardTitle = this.closest('.prediction-card').querySelector('h3').textContent;
+                    showNotification('Chart Interaction', `Opening detailed chart for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // GIS card interactions
+            const gisCards = document.querySelectorAll('.gis-card');
+            gisCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const cardTitle = this.querySelector('h3').textContent;
+                    showNotification('GIS Data', `Opening detailed GIS view for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Theme switching functionality
+        });
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#0896FC' : '#10b981'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Example usage
+        // showNotification('Welcome to Hydro-M!', 'success');
+
+        // System Alarms Page Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Category tab functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const alarmCards = document.querySelectorAll('.alarm-card');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabBtns.forEach(tab => tab.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    filterAlarms(category);
+                });
+            });
+
+            function filterAlarms(category) {
+                alarmCards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Dam filter functionality
+            const damFilter = document.querySelector('.dam-filter');
+            const damGroups = document.querySelectorAll('.dam-alarm-group');
+            
+            damFilter.addEventListener('change', function() {
+                const selectedDam = this.value;
+                damGroups.forEach(group => {
+                    if (selectedDam === 'all' || group.getAttribute('data-dam') === selectedDam) {
+                        group.style.display = 'block';
+                    } else {
+                        group.style.display = 'none';
+                    }
+                });
+            });
+
+            // Severity filter functionality
+            const severityFilter = document.querySelector('.severity-filter');
+            
+            severityFilter.addEventListener('change', function() {
+                const selectedSeverity = this.value;
+                alarmCards.forEach(card => {
+                    if (selectedSeverity === 'all' || card.classList.contains(selectedSeverity)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            // Alarm action buttons functionality
+            const actionBtns = document.querySelectorAll('.action-btn');
+            
+            actionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.classList.contains('acknowledge') ? 'acknowledged' :
+                                 this.classList.contains('resolve') ? 'resolved' : 'viewed';
+                    const alarmCard = this.closest('.alarm-card');
+                    const alarmTitle = alarmCard.querySelector('h4').textContent;
+                    
+                    if (action === 'acknowledged') {
+                        this.textContent = 'Acknowledged';
+                        this.disabled = true;
+                        this.style.background = '#6b7280';
+                        this.style.color = 'white';
+                        showNotification(`Alarm acknowledged: ${alarmTitle}`, 'success');
+                    } else if (action === 'resolved') {
+                        alarmCard.style.opacity = '0.6';
+                        alarmCard.style.background = '#f0fdf4';
+                        this.textContent = 'Resolved';
+                        this.disabled = true;
+                        this.style.background = '#10b981';
+                        this.style.color = 'white';
+                        showNotification(`Alarm resolved: ${alarmTitle}`, 'success');
+                        
+                        // Move to resolved section after 2 seconds
+                        setTimeout(() => {
+                            moveToResolved(alarmCard);
+                        }, 2000);
+                    } else {
+                        showNotification(`Opening details for: ${alarmTitle}`, 'info');
+                    }
+                });
+            });
+
+            function moveToResolved(alarmCard) {
+                const resolvedList = document.querySelector('.resolved-alarms-list');
+                const alarmTitle = alarmCard.querySelector('h4').textContent;
+                const alarmDescription = alarmCard.querySelector('p').textContent;
+                
+                const resolvedAlarm = document.createElement('div');
+                resolvedAlarm.className = 'resolved-alarm';
+                resolvedAlarm.innerHTML = `
+                    <div class="resolved-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="resolved-content">
+                        <h4>${alarmTitle}</h4>
+                        <p>${alarmDescription}</p>
+                        <span class="resolved-time">Resolved just now</span>
+                    </div>
+                `;
+                
+                resolvedList.insertBefore(resolvedAlarm, resolvedList.firstChild);
+                alarmCard.remove();
+                
+                // Update statistics
+                updateAlarmStats();
+            }
+
+            function updateAlarmStats() {
+                const criticalAlarms = document.querySelectorAll('.alarm-card.critical').length;
+                const warningAlarms = document.querySelectorAll('.alarm-card.warning').length;
+                const infoAlarms = document.querySelectorAll('.alarm-card.info').length;
+                const resolvedAlarms = document.querySelectorAll('.resolved-alarm').length;
+                
+                // Update stat numbers
+                const statNumbers = document.querySelectorAll('.stat-number');
+                if (statNumbers[0]) statNumbers[0].textContent = criticalAlarms;
+                if (statNumbers[1]) statNumbers[1].textContent = warningAlarms;
+                if (statNumbers[2]) statNumbers[2].textContent = infoAlarms;
+                if (statNumbers[3]) statNumbers[3].textContent = resolvedAlarms;
+                
+                // Update category tab counts
+                const allTab = document.querySelector('[data-category="all"]');
+                const waterLevelTab = document.querySelector('[data-category="water-level"]');
+                const dischargeTab = document.querySelector('[data-category="discharge"]');
+                const powerTab = document.querySelector('[data-category="power"]');
+                const equipmentTab = document.querySelector('[data-category="equipment"]');
+                const environmentalTab = document.querySelector('[data-category="environmental"]');
+                
+                const totalAlarms = criticalAlarms + warningAlarms + infoAlarms;
+                const waterLevelAlarms = document.querySelectorAll('.alarm-card[data-category="water-level"]').length;
+                const dischargeAlarms = document.querySelectorAll('.alarm-card[data-category="discharge"]').length;
+                const powerAlarms = document.querySelectorAll('.alarm-card[data-category="power"]').length;
+                const equipmentAlarms = document.querySelectorAll('.alarm-card[data-category="equipment"]').length;
+                const environmentalAlarms = document.querySelectorAll('.alarm-card[data-category="environmental"]').length;
+                
+                if (allTab) allTab.textContent = `All Alarms (${totalAlarms})`;
+                if (waterLevelTab) waterLevelTab.textContent = `Water Level (${waterLevelAlarms})`;
+                if (dischargeTab) dischargeTab.textContent = `Discharge (${dischargeAlarms})`;
+                if (powerTab) powerTab.textContent = `Power Generation (${powerAlarms})`;
+                if (equipmentTab) equipmentTab.textContent = `Equipment (${equipmentAlarms})`;
+                if (environmentalTab) environmentalTab.textContent = `Environmental (${environmentalAlarms})`;
+            }
+
+            // Real-time alarm updates simulation
+            function simulateNewAlarm() {
+                const alarmTypes = [
+                    {
+                        title: 'Water Level Fluctuation Detected',
+                        description: 'Unusual water level variations detected in the reservoir.',
+                        category: 'water-level',
+                        severity: 'warning',
+                        dam: 'kiira'
+                    },
+                    {
+                        title: 'Power Generation Efficiency Drop',
+                        description: 'Power generation efficiency has decreased by 5%.',
+                        category: 'power',
+                        severity: 'info',
+                        dam: 'bujagali'
+                    },
+                    {
+                        title: 'Equipment Maintenance Due',
+                        description: 'Scheduled maintenance is due for turbine components.',
+                        category: 'equipment',
+                        severity: 'info',
+                        dam: 'isimba'
+                    }
+                ];
+                
+                const randomAlarm = alarmTypes[Math.floor(Math.random() * alarmTypes.length)];
+                const damGroup = document.querySelector(`[data-dam="${randomAlarm.dam}"]`);
+                
+                if (damGroup) {
+                    const alarmList = damGroup.querySelector('.alarm-list');
+                    const newAlarm = createAlarmCard(randomAlarm);
+                    alarmList.insertBefore(newAlarm, alarmList.firstChild);
+                    
+                    showNotification(`New ${randomAlarm.severity} alarm: ${randomAlarm.title}`, randomAlarm.severity);
+                    updateAlarmStats();
+                }
+            }
+
+            function createAlarmCard(alarmData) {
+                const alarmCard = document.createElement('div');
+                alarmCard.className = `alarm-card ${alarmData.severity}`;
+                alarmCard.setAttribute('data-category', alarmData.category);
+                
+                const severityIcon = alarmData.severity === 'critical' ? 'exclamation-triangle' :
+                                   alarmData.severity === 'warning' ? 'exclamation-circle' : 'info-circle';
+                
+                alarmCard.innerHTML = `
+                    <div class="alarm-header">
+                        <div class="alarm-severity">
+                            <i class="fas fa-${severityIcon}"></i>
+                            <span>${alarmData.severity.charAt(0).toUpperCase() + alarmData.severity.slice(1)}</span>
+                        </div>
+                        <div class="alarm-time">Just now</div>
+                    </div>
+                    <div class="alarm-content">
+                        <h4>${alarmData.title}</h4>
+                        <p>${alarmData.description}</p>
+                        <div class="alarm-metrics">
+                            <span class="metric"><strong>Status:</strong> Active</span>
+                            <span class="metric"><strong>Priority:</strong> Medium</span>
+                        </div>
+                    </div>
+                    <div class="alarm-actions">
+                        <button class="action-btn acknowledge">Acknowledge</button>
+                        <button class="action-btn resolve">Resolve</button>
+                        <button class="action-btn details">View Details</button>
+                    </div>
+                `;
+                
+                // Add event listeners to new buttons
+                const newActionBtns = alarmCard.querySelectorAll('.action-btn');
+                newActionBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const action = this.classList.contains('acknowledge') ? 'acknowledged' :
+                                     this.classList.contains('resolve') ? 'resolved' : 'viewed';
+                        const alarmTitle = alarmCard.querySelector('h4').textContent;
+                        
+                        if (action === 'acknowledged') {
+                            this.textContent = 'Acknowledged';
+                            this.disabled = true;
+                            this.style.background = '#6b7280';
+                            this.style.color = 'white';
+                            showNotification(`Alarm acknowledged: ${alarmTitle}`, 'success');
+                        } else if (action === 'resolved') {
+                            alarmCard.style.opacity = '0.6';
+                            alarmCard.style.background = '#f0fdf4';
+                            this.textContent = 'Resolved';
+                            this.disabled = true;
+                            this.style.background = '#10b981';
+                            this.style.color = 'white';
+                            showNotification(`Alarm resolved: ${alarmTitle}`, 'success');
+                            
+                            setTimeout(() => {
+                                moveToResolved(alarmCard);
+                            }, 2000);
+                        } else {
+                            showNotification(`Opening details for: ${alarmTitle}`, 'info');
+                        }
+                    });
+                });
+                
+                return alarmCard;
+            }
+
+            // Simulate new alarms every 30 seconds
+            setInterval(simulateNewAlarm, 30000);
+
+            // Initialize alarm statistics
+            updateAlarmStats();
+
+            // View all history button
+            const viewAllBtn = document.querySelector('.view-all-btn');
+            if (viewAllBtn) {
+                viewAllBtn.addEventListener('click', function() {
+                    showNotification('Opening complete alarm history...', 'info');
+                });
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="uegcl-logo.png" alt="UEGCL Logo">
+            </div>
+            <div class="footer-text">
+                <p>2023 Hydro-M, All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,3756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro-M Navigation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #374151;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-toggle:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: #374151;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #0896FC;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .user-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #0896FC;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-radius: 0.25rem;
+            margin: 0.25rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0896FC;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .login-btn:hover {
+            background: #0678d4;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 70px;
+            left: -100%;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .mobile-nav.show {
+            left: 0;
+        }
+
+        /* Dam Sidebar Styles */
+        .dam-sidebar {
+            padding: 1rem;
+        }
+
+        .dam-sidebar-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-sidebar-header h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-sidebar-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .dam-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dam-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dam-item:hover {
+            border-color: #0896FC;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .dam-item.featured {
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            border-color: #0896FC;
+        }
+
+        .dam-item.featured .dam-info h4,
+        .dam-item.featured .dam-info p,
+        .dam-item.featured .dam-status {
+            color: white;
+        }
+
+        .dam-icon {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dam-item.featured .dam-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dam-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .dam-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .dam-info .location {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .status-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .dam-item.featured .status-label,
+        .dam-item.featured .status-value {
+            color: white;
+        }
+
+        /* Mobile Navigation Menu (hidden on large screens) */
+        .mobile-nav-menu {
+            list-style: none;
+            padding: 1rem;
+            display: none;
+        }
+
+        .mobile-nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .mobile-nav-link.active {
+            background-color: #0896FC;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .dam-sidebar {
+                display: none;
+            }
+
+            .mobile-nav-menu {
+                display: block;
+            }
+        }
+
+        /* Content area for testing */
+        .content {
+            margin-top: 90px;
+            padding: 2rem;
+            margin-right: 320px; /* Make space for right sidebar */
+        }
+
+        .content h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .content p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        /* Right Sidebar Styles */
+        .right-sidebar {
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 998;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-form {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .categories-section h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-item.active {
+            background-color: #0896FC;
+        }
+
+        .category-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .category-item:hover a {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .category-item.active a {
+            color: white;
+        }
+
+        .category-item i {
+            font-size: 1rem;
+        }
+
+        /* Alarms Section */
+        .alarms-section {
+            padding: 1.5rem;
+        }
+
+        .alarms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .alarms-header h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .alarms-link {
+            color: #0896FC;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .alarms-link:hover {
+            color: #0678d4;
+        }
+
+        .alarms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .alarm-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-item.critical {
+            border-left: 3px solid #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alarm-item.warning {
+            border-left: 3px solid #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alarm-icon {
+            color: #6b7280;
+            font-size: 1rem;
+            margin-top: 0.125rem;
+        }
+
+        .alarm-item.critical .alarm-icon {
+            color: #ef4444;
+        }
+
+        .alarm-item.warning .alarm-icon {
+            color: #f59e0b;
+        }
+
+        .alarm-content h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .alarm-content p {
+            font-size: 0.7rem;
+            color: #6b7280;
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .alarm-time {
+            font-size: 0.65rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                width: 280px;
+            }
+            
+            .content {
+                margin-right: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .right-sidebar {
+                display: none;
+            }
+            
+            .content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 0;
+            margin-right: 320px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s ease;
+            background: var(--bg-secondary);
+        }
+
+        .main-content.with-sidebar {
+            margin-left: 280px;
+        }
+
+        /* Blue Card */
+        .blue-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 213px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .blue-card-left {
+            background: #0896FC;
+            width: 200px;
+            padding: 2rem;
+        }
+
+        .blue-card-right {
+            background: white;
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-subtitle {
+            color: var(--text-tertiary);
+            font-size: 1.125rem;
+        }
+
+        /* Monitoring Section Styles */
+        .monitoring-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Monitoring Grid */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Date/Time Card */
+        .datetime-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .datetime-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .datetime-content {
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Dam Status Cards */
+        .dam-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dam-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dam-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+            transform: translateY(-2px);
+        }
+
+        .dam-card.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+        }
+
+        .dam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .dam-header h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning-color);
+        }
+
+        .status-indicator.error {
+            background: var(--error-color);
+        }
+
+        .dam-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-item:hover {
+            background: var(--bg-secondary);
+            transform: scale(1.02);
+        }
+
+        .metric-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Prediction Grid */
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .prediction-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-placeholder small {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        /* GIS Grid */
+        .gis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gis-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .gis-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .gis-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design for Monitoring */
+        @media (max-width: 1200px) {
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .datetime-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .dam-status-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: white;
+            border-top: 3px solid #0896FC;
+            padding: 0.75rem 2rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo img {
+            height: 25px;
+            width: auto;
+        }
+
+        .footer-text p {
+            color: #0896FC;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+            
+            .footer-logo img {
+                height: 20px;
+            }
+            
+            .footer-text p {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Predictions Page Specific Styles */
+        .section-header {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .section-header:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .section-header .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .dam-info {
+            flex: 1;
+        }
+
+        .dam-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #0896FC 0%, #06b6d4 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .dam-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #0896FC 0%, #06b6d4 100%);
+            border-radius: 2px;
+        }
+
+        .dam-subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 0;
+            margin-top: 0.75rem;
+        }
+
+        .dam-name {
+            color: #0896FC;
+            font-weight: 800;
+        }
+        
+        .predictions-text {
+            color: #1f2937;
+            font-weight: 700;
+        }
+
+        .controls-section {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-end;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .dam-selector, .timeframe-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+            text-align: right;
+        }
+
+        .dropdown-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-dropdown {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            background: #f9fafb;
+            color: #1f2937;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 200px;
+            max-width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .dam-dropdown:hover {
+            border-color: #0896FC;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .dam-dropdown:focus {
+            outline: none;
+            border-color: #0896FC;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.2);
+        }
+
+        /* Current Status Card */
+        .current-status-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .current-status-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            70% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        .status-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        
+        /* Responsive grid for smaller screens */
+        @media (max-width: 1200px) {
+            .status-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .status-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #d1d5db;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .current-level .metric-icon {
+            background: linear-gradient(135deg, #0896FC, #0EA5E9);
+        }
+
+        .prediction-change .metric-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .prediction-change .metric-icon.trend-up {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .confidence-level .metric-icon {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .next-update .metric-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .metric-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-content h3 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .metric-content p {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin: 0;
+        }
+
+        .metric-content span {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        /* Charts Section */
+        .predictions-charts-section {
+            margin-bottom: 2rem;
+        }
+
+        .predictions-charts-section .section-header {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .predictions-charts-section .section-header:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .predictions-charts-section .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .predictions-charts-section .section-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-item.realtime .legend-dot {
+            background: #0896FC;
+        }
+
+        .legend-item.prediction .legend-dot {
+            background: #f59e0b;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        
+        .chart-card.main-chart .chart-container {
+            height: 450px;
+        }
+
+        .chart-container.small {
+            height: 200px;
+        }
+
+        /* Prediction Variables Section */
+        .prediction-variables-section {
+            margin-bottom: 2rem;
+        }
+
+        .prediction-variables-section .section-header {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem 1rem 0 0;
+            padding: 2rem;
+            margin-bottom: 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .prediction-variables-section .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .prediction-variables-section .section-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .variables-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .variables-info i {
+            font-size: 0.875rem;
+        }
+
+        .variables-grid {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 1rem 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        .prediction-variables-section:hover .section-header,
+        .prediction-variables-section:hover .variables-grid {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .variable-category {
+            margin-bottom: 0;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .category-title i {
+            color: #0896FC;
+            font-size: 1rem;
+        }
+
+        .variables-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .variable-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .variable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #d1d5db;
+        }
+
+        .variable-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .variable-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .variable-impact {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .variable-impact.high {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .variable-impact.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .variable-impact.low {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .variable-value {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .variable-value .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .trend {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .trend.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .trend.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .trend.neutral {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .variable-description p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Model Performance Section */
+        .model-performance-section {
+            margin-bottom: 2rem;
+        }
+
+        .model-performance-section .section-header {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem 1rem 0 0;
+            padding: 2rem;
+            margin-bottom: 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .model-performance-section .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .model-performance-section .section-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .performance-grid {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 1rem 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .model-performance-section:hover .section-header,
+        .model-performance-section:hover .performance-grid {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .performance-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .performance-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #d1d5db;
+        }
+
+        .performance-card .card-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .performance-card .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .metrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0896FC;
+        }
+
+        .metric-info-icon {
+            font-size: 0.75rem;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .metric-info-icon:hover {
+            color: #0896FC;
+            transform: scale(1.1);
+        }
+
+        /* Tooltip Styles */
+        .metric-tooltip {
+            position: absolute;
+            bottom: calc(100% + 2px);
+            right: -10px;
+            background: #1f2937;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            width: 250px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            white-space: normal;
+        }
+
+        .metric-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            border: 5px solid transparent;
+            border-top-color: #1f2937;
+        }
+
+        .metric-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive tooltip positioning for mobile */
+        @media (max-width: 768px) {
+            .metric-tooltip {
+                right: -50px;
+                width: 220px;
+            }
+            
+            .metric-tooltip::after {
+                right: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metric-tooltip {
+                right: -80px;
+                width: 200px;
+                font-size: 0.7rem;
+                padding: 0.6rem;
+            }
+            
+            .metric-tooltip::after {
+                right: 90px;
+            }
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            color: #0896FC;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .tooltip-description {
+            margin-bottom: 0.5rem;
+        }
+
+        .tooltip-interpretation {
+            background: rgba(8, 150, 252, 0.1);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border-left: 2px solid #0896FC;
+        }
+
+        /* Performance Info Section - Hidden since we have interactive tooltips */
+        .performance-info-section {
+            display: none;
+        }
+
+        /* Responsive Design for Performance Section */
+        @media (max-width: 768px) {
+            .performance-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+
+            .model-performance-section .section-header {
+                padding: 1.5rem;
+            }
+
+
+        }
+
+        @media (max-width: 480px) {
+            .performance-grid {
+                padding: 1rem;
+            }
+
+            .model-performance-section .section-header {
+                padding: 1rem;
+            }
+
+            .performance-card {
+                padding: 1rem;
+            }
+        }
+
+        /* Responsive Design for Variables Section */
+        @media (max-width: 768px) {
+            .prediction-variables-section .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .variables-grid {
+                padding: 1.5rem;
+                gap: 2rem;
+            }
+
+            .variables-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .variable-value {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .variable-value .value {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .prediction-variables-section .section-header {
+                padding: 1rem;
+            }
+
+            .variables-grid {
+                padding: 1rem;
+            }
+
+            .variable-card {
+                padding: 1rem;
+            }
+
+            .category-title {
+                font-size: 1rem;
+            }
+        }
+
+        .variables-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .variables-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .variable-category {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title i {
+            color: var(--primary-color);
+        }
+
+        .variables-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .variable-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .variable-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .variable-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .variable-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .variable-impact {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .variable-impact.high {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .variable-impact.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .variable-impact.low {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+
+        .variable-value {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .variable-value .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .trend {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .trend.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .trend.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .trend.neutral {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+
+        .variable-description p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+
+        /* Model Performance Section */
+        .model-performance-section {
+            margin-bottom: 2rem;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .performance-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+        }
+
+        .metrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .section-header {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .section-header .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                gap: 1.5rem;
+                margin-left: 0;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .dam-selector, .timeframe-selector {
+                min-width: 100%;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .dam-dropdown {
+                width: 100%;
+            }
+
+            .dam-title {
+                font-size: 1.5rem;
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            .current-status-card {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .status-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .variables-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-header {
+                padding: 1rem;
+            }
+
+            .dam-title {
+                font-size: 1.25rem;
+            }
+
+            .current-status-card {
+                padding: 1rem;
+            }
+
+            .metric-card {
+                padding: 1.25rem;
+            }
+
+            .metric-content h3 {
+                font-size: 1.5rem;
+            }
+
+            .metric-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 0.875rem;
+            }
+
+            .variable-card {
+                padding: 1rem;
+            }
+
+            .variable-value .value {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="./home.html" class="logo">
+                <img src="logo.png" alt="Hydro-M Logo">
+            </a>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="./home.html" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="./system-alarms.html" class="nav-link">System Alarms</a>
+            </li>
+            <li class="nav-item">
+                <a href="./about-us.html" class="nav-link">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./contact-us.html" class="nav-link">Contact Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./download-data.html" class="nav-link">Download Data</a>
+            </li>
+            <li class="nav-item">
+                <a href="./help.html" class="nav-link">Help</a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user"></i>
+                    <span>John Doe</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="dam-sidebar">
+            <div class="dam-sidebar-header">
+                <h3>THE CASCADE</h3>
+                <p>Real-time dam status and data</p>
+            </div>
+            <div class="dam-list">
+                <a href="#" class="dam-item featured">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Lake Nalubaale</h4>
+                        <p class="location">Jinja Pier</p>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1500mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Kiira HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1480mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">200MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">520 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Bujagali HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1520mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">250MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">380 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Isimba HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1450mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">180MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">450 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="./home.html" class="mobile-nav-link">Dashboard</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./system-alarms.html" class="mobile-nav-link">System Alarms</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./about-us.html" class="mobile-nav-link">About Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./contact-us.html" class="mobile-nav-link">Contact Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./download-data.html" class="mobile-nav-link">Download Data</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./help.html" class="mobile-nav-link">Help</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Section Header with Prediction Selection -->
+        <div class="section-header">
+            <div class="header-content">
+                <div class="dam-info">
+                    <h1 class="dam-title">
+                        <span class="dam-name" id="currentDamName">Nalubaale HPP</span>
+                        <span class="predictions-text">Water Level Predictions</span>
+                    </h1>
+                    <p class="dam-subtitle">AI-powered water level forecasting and analysis</p>
+                </div>
+                <div class="controls-section">
+                    <div class="dam-selector">
+                        <label for="damSelection" class="dropdown-label">Select Dam:</label>
+                        <select id="damSelection" class="dam-dropdown">
+                            <option value="nalubaale">Nalubaale HPP</option>
+                            <option value="kiira">Kiira HPP</option>
+                            <option value="isimba">Isimba HPP</option>
+                            <option value="karuma">Karuma HPP</option>
+                            <option value="bujagali">Bujagali HPP</option>
+                        </select>
+                    </div>
+                    <div class="timeframe-selector">
+                        <label for="predictionTimeframe" class="dropdown-label">Prediction Timeframe:</label>
+                        <select id="predictionTimeframe" class="dam-dropdown">
+                            <option value="24h">Next 24 Hours</option>
+                            <option value="48h">Next 48 Hours</option>
+                            <option value="7d">Next 7 Days</option>
+                            <option value="30d">Next 30 Days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Water Level Status -->
+        <div class="current-status-card">
+            <div class="status-header">
+                <h2>Current Water Level Status</h2>
+                <div class="live-indicator">
+                    <div class="pulse"></div>
+                    <span>LIVE DATA</span>
+                </div>
+            </div>
+            <div class="status-metrics">
+                <div class="metric-card current-level">
+                    <div class="metric-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 id="currentWaterLevel">1,485 mm</h3>
+                        <p>Current Level</p>
+                        <span class="metric-location">Lake Victoria</span>
+                    </div>
+                </div>
+                <div class="metric-card prediction-change">
+                    <div class="metric-icon trend-up">
+                        <i class="fas fa-arrow-trend-up"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 id="predictionChange">+2.3%</h3>
+                        <p>24h Prediction</p>
+                        <span class="metric-timeframe">Expected Rise</span>
+                    </div>
+                </div>
+                <div class="metric-card confidence-level">
+                    <div class="metric-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 id="confidenceLevel">94.2%</h3>
+                        <p>Confidence Level</p>
+                        <span class="metric-accuracy">High Accuracy</span>
+                    </div>
+                </div>
+                <div class="metric-card next-update">
+                    <div class="metric-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 id="nextUpdate">15 min</h3>
+                        <p>Next Update</p>
+                        <span class="metric-schedule">Auto Refresh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Charts Section -->
+        <div class="predictions-charts-section">
+            <div class="section-header">
+                <div>
+                    <h2>Water Level Predictions & Analysis</h2>
+                    <p>Real-time data combined with predictive modeling</p>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <!-- Combined Real-time & Prediction Chart -->
+                <div class="chart-card main-chart">
+                    <div class="card-header">
+                        <h3>Water Level: Real-time & Predictions</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="waterLevelPredictionChart" width="800" height="400"></canvas>
+                    </div>
+                </div>
+
+                <!-- Confidence Interval Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Prediction Confidence Intervals</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="confidenceIntervalChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Variables Section -->
+        <div class="prediction-variables-section">
+            <div class="section-header">
+                <div>
+                    <h2>Prediction Input Variables</h2>
+                    <p>Key environmental and operational factors influencing water level predictions</p>
+                </div>
+                <div class="variables-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Updated every 5 minutes</span>
+                </div>
+            </div>
+
+            <div class="variables-grid">
+                <!-- Discharge Variables -->
+                <div class="variable-category">
+                    <h3 class="category-title">
+                        <i class="fas fa-tint"></i>
+                        Discharge Rates
+                    </h3>
+                    <div class="variables-cards">
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Bujagali Inflow</h4>
+                                <span class="variable-impact high">High Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="bujagaliInflow">1,250 m³/s</span>
+                                <span class="trend positive">+3.2%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Water discharge flowing into the system from Bujagali HPP</p>
+                            </div>
+                        </div>
+
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Bujagali Outflow</h4>
+                                <span class="variable-impact high">High Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="bujagaliOutflow">1,180 m³/s</span>
+                                <span class="trend negative">-1.8%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Water discharge flowing out from Bujagali HPP operations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Environmental Variables -->
+                <div class="variable-category">
+                    <h3 class="category-title">
+                        <i class="fas fa-cloud-sun"></i>
+                        Environmental Conditions (Isimba Region)
+                    </h3>
+                    <div class="variables-cards">
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Temperature</h4>
+                                <span class="variable-impact medium">Medium Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="isimbaTemperature">26.5°C</span>
+                                <span class="trend positive">+0.8°C</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Ambient temperature affecting evaporation rates</p>
+                            </div>
+                        </div>
+
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Humidity</h4>
+                                <span class="variable-impact medium">Medium Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="isimbaHumidity">76%</span>
+                                <span class="trend positive">+2.1%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Relative humidity influencing evaporation and condensation</p>
+                            </div>
+                        </div>
+
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Precipitation</h4>
+                                <span class="variable-impact high">High Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="isimbaPrecipitation">3.2 mm/h</span>
+                                <span class="trend positive">+15.3%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Rainfall contributing to water level increases</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Factors -->
+                <div class="variable-category">
+                    <h3 class="category-title">
+                        <i class="fas fa-cogs"></i>
+                        Additional Factors
+                    </h3>
+                    <div class="variables-cards">
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Wind Speed</h4>
+                                <span class="variable-impact low">Low Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="windSpeed">12.3 km/h</span>
+                                <span class="trend neutral">0.0%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Wind affecting surface evaporation and wave action</p>
+                            </div>
+                        </div>
+
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Solar Radiation</h4>
+                                <span class="variable-impact medium">Medium Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="solarRadiation">850 W/m²</span>
+                                <span class="trend positive">+5.2%</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Solar energy driving evaporation processes</p>
+                            </div>
+                        </div>
+
+                        <div class="variable-card">
+                            <div class="variable-header">
+                                <h4>Seasonal Factor</h4>
+                                <span class="variable-impact medium">Medium Impact</span>
+                            </div>
+                            <div class="variable-value">
+                                <span class="value" id="seasonalFactor">1.15</span>
+                                <span class="trend positive">Wet Season</span>
+                            </div>
+                            <div class="variable-description">
+                                <p>Seasonal adjustment based on historical patterns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics Information Section -->
+        <div class="performance-info-section">
+            <div class="info-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>Understanding Performance Metrics</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-item-header">
+                        <span class="metric-name">MAE</span>
+                    </div>
+                    <div class="info-item-description">
+                        Mean Absolute Error measures the average magnitude of prediction errors in millimeters.
+                    </div>
+                    <div class="info-item-interpretation">
+                        <strong>Our Result:</strong> ±2.3mm means predictions are typically within 2.3mm of actual values - excellent precision for water level forecasting.
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-item-header">
+                        <span class="metric-name">RMSE</span>
+                    </div>
+                    <div class="info-item-description">
+                        Root Mean Square Error gives higher weight to larger prediction errors, providing insight into worst-case scenarios.
+                    </div>
+                    <div class="info-item-interpretation">
+                        <strong>Our Result:</strong> ±3.1mm indicates that even larger errors are well-controlled and within acceptable engineering tolerances.
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-item-header">
+                        <span class="metric-name">R² Score</span>
+                    </div>
+                    <div class="info-item-description">
+                        R-squared measures how well the model explains the variance in water levels, ranging from 0 to 1.
+                    </div>
+                    <div class="info-item-interpretation">
+                        <strong>Our Result:</strong> 0.94 means the model explains 94% of water level variations - indicating very high predictive power.
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-item-header">
+                        <span class="metric-name">24h Accuracy</span>
+                    </div>
+                    <div class="info-item-description">
+                        Percentage of 24-hour predictions that fall within acceptable error margins for operational decision-making.
+                    </div>
+                    <div class="info-item-interpretation">
+                        <strong>Our Result:</strong> 94.2% accuracy provides high confidence for daily operational planning and risk management.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance Section -->
+        <div class="model-performance-section">
+            <div class="section-header">
+                <div>
+                    <h2>Prediction Model Performance</h2>
+                    <p>Statistical accuracy and reliability metrics</p>
+                </div>
+            </div>
+            
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <div class="card-header">
+                        <h3>Model Accuracy Metrics</h3>
+                    </div>
+                    <div class="metrics-list">
+                        <div class="metric-row">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">Mean Absolute Error (MAE)</span>
+                                <i class="fas fa-info-circle metric-info-icon" data-metric="mae"></i>
+                            </div>
+                            <span class="metric-value">±2.3 mm</span>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">Root Mean Square Error (RMSE)</span>
+                                <i class="fas fa-info-circle metric-info-icon" data-metric="rmse"></i>
+                            </div>
+                            <span class="metric-value">±3.1 mm</span>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">R² Score</span>
+                                <i class="fas fa-info-circle metric-info-icon" data-metric="r2"></i>
+                            </div>
+                            <span class="metric-value">0.94</span>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">Prediction Accuracy (24h)</span>
+                                <i class="fas fa-info-circle metric-info-icon" data-metric="accuracy"></i>
+                            </div>
+                            <span class="metric-value">94.2%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <div class="card-header">
+                        <h3>Historical Performance</h3>
+                    </div>
+                    <div class="chart-container small">
+                        <canvas id="modelAccuracyChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+        <div class="sidebar-card">
+            <!-- Search Section -->
+            <div class="search-section">
+                <form class="search-form">
+                    <input type="text" placeholder="Search dam reservoirs..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Monitoring Categories -->
+            <div class="categories-section">
+                <h4>Monitoring Category</h4>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <a href="#">
+                            <i class="fas fa-clock"></i>
+                            Real-time
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-map-marker-alt"></i>
+                            GIS Monitoring
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#">
+                            <i class="fas fa-chart-line"></i>
+                            Predictions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Alarms Section -->
+            <div class="alarms-section">
+                <div class="alarms-header">
+                    <h4>System Alarms</h4>
+                    <a href="#" class="alarms-link">View All (5)</a>
+                </div>
+                <div class="alarms-list">
+                    <div class="alarm-item critical">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Nalubaale HPP</h6>
+                            <p>The water level has passed the normal and expected level.</p>
+                            <span class="alarm-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Kiira HPP</h6>
+                            <p>Reservoir past active volume just as expected.</p>
+                            <span class="alarm-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Bujagali HPP</h6>
+                            <p>Water level approaching critical threshold.</p>
+                            <span class="alarm-time">8 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Navigation JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileNav.classList.toggle('show');
+            });
+
+            // User dropdown toggle
+            const userBtn = document.getElementById('userBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-dropdown')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+
+            // Close mobile nav when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.navbar') && !e.target.closest('.mobile-nav')) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Navigation link active state
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                });
+            });
+
+            // Close mobile nav on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Smooth navigation handling
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the href attribute
+                    const href = this.getAttribute('href');
+                    
+                    // If it's not just a "#", handle navigation
+                    if (href && href !== '#') {
+                        // Here you would typically navigate to the page
+                        console.log('Navigating to:', href);
+                    }
+                });
+            });
+
+            // Add loading animation to logo
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+
+            // Dam sidebar functionality
+            const damItems = document.querySelectorAll('.dam-item');
+            
+            damItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all dam items
+                    damItems.forEach(dam => dam.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get dam name for navigation
+                    const damName = this.querySelector('h4').textContent;
+                    console.log('Selected dam:', damName);
+                    
+                    // Here you would typically navigate to the dam's detail page
+                    // or update the main content area
+                });
+            });
+
+            // Real-time clock functionality
+            function updateClock() {
+                const now = new Date();
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                document.getElementById('dayname').textContent = days[now.getDay()];
+                document.getElementById('month').textContent = months[now.getMonth()];
+                document.getElementById('daynum').textContent = now.getDate();
+                document.getElementById('year').textContent = now.getFullYear();
+                
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                const period = hours >= 12 ? 'PM' : 'AM';
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                
+                document.getElementById('hour').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+                document.getElementById('period').textContent = period;
+            }
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock(); // Initial call
+
+            // Dam card interactions
+            const damCards = document.querySelectorAll('.dam-card');
+            damCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    damCards.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    const damId = this.getAttribute('data-dam');
+                    const damName = this.querySelector('h4').textContent.split(' - ')[0];
+                    
+                    // Show notification
+                    showNotification('Dam Selected', `${damName} is now active`, 'info');
+                    
+                    // Update dam sidebar if it exists
+                    updateDamSidebar(damId, damName);
+                });
+            });
+
+            // Dam Selection Functionality
+            const damSelector = document.getElementById('damSelection');
+            const currentDamName = document.getElementById('currentDamName');
+            
+            // Dam data mapping
+            const damData = {
+                'nalubaale': {
+                    name: 'Nalubaale HPP',
+                    waterLevel: '1,485 mm',
+                    location: 'Lake Victoria'
+                },
+                'kiira': {
+                    name: 'Kiira HPP',
+                    waterLevel: '1,492 mm',
+                    location: 'Lake Victoria'
+                },
+                'isimba': {
+                    name: 'Isimba HPP',
+                    waterLevel: '1,156 mm',
+                    location: 'River Nile'
+                },
+                'karuma': {
+                    name: 'Karuma HPP',
+                    waterLevel: '1,063 mm',
+                    location: 'River Nile'
+                },
+                'bujagali': {
+                    name: 'Bujagali HPP',
+                    waterLevel: '1,134 mm',
+                    location: 'River Nile'
+                }
+            };
+
+            // Handle dam selection change
+            damSelector.addEventListener('change', function() {
+                const selectedDam = this.value;
+                const damInfo = damData[selectedDam];
+                
+                if (damInfo) {
+                    // Update the title
+                    currentDamName.textContent = damInfo.name;
+                    
+                    // Update the current water level in the metrics
+                    const currentWaterLevel = document.getElementById('currentWaterLevel');
+                    const metricLocation = document.querySelector('.metric-location');
+                    
+                    if (currentWaterLevel) {
+                        // Animate the value change
+                        currentWaterLevel.textContent = damInfo.waterLevel;
+                        currentWaterLevel.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            currentWaterLevel.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                    
+                    if (metricLocation) {
+                        metricLocation.textContent = damInfo.location;
+                    }
+                    
+                    // Show notification
+                    showNotification('Dam Changed', `Switched to ${damInfo.name} predictions`, 'info');
+                    
+                    // Here you would typically make an API call to fetch new prediction data
+                    console.log(`Loading predictions for ${damInfo.name}`);
+                }
+            });
+
+            // Enhanced metric animations
+            function animateMetricValue(element, newValue, oldValue) {
+                if (!element) return;
+                
+                const startValue = parseInt(oldValue) || 0;
+                const endValue = parseInt(newValue) || 0;
+                const duration = 1000; // 1 second
+                const startTime = performance.now();
+                
+                function updateValue(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutQuart);
+                    
+                    // Update the element with the appropriate unit
+                    const unit = element.textContent.match(/[a-zA-Z%°]+/)?.[0] || '';
+                    element.textContent = currentValue + unit;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateValue);
+                    }
+                }
+                
+                requestAnimationFrame(updateValue);
+            }
+
+            // Enhanced dam data updates with animations
+            function updateDamData() {
+                const dams = [
+                    { id: 1, name: 'Bujagali' },
+                    { id: 2, name: 'Karuma' },
+                    { id: 3, name: 'Isimba' }
+                ];
+
+                dams.forEach(dam => {
+                    // Simulate realistic data changes
+                    const waterLevel = Math.floor(Math.random() * 200) + 1100;
+                    const humidity = Math.floor(Math.random() * 20) + 70;
+                    const dispatch = Math.floor(Math.random() * 100) + 150;
+                    const temperature = Math.floor(Math.random() * 8) + 22;
+                    const discharge = Math.floor(Math.random() * 200) + 700;
+                    const precipitation = Math.floor(Math.random() * 10);
+
+                    // Get current values for animation
+                    const waterLevelEl = document.getElementById(`waterlevel-${dam.id}`);
+                    const humidityEl = document.getElementById(`humidity-${dam.id}`);
+                    const dispatchEl = document.getElementById(`dispatch-${dam.id}`);
+                    const temperatureEl = document.getElementById(`temperature-${dam.id}`);
+                    const dischargeEl = document.getElementById(`discharge-${dam.id}`);
+                    const precipitationEl = document.getElementById(`precipitation-${dam.id}`);
+
+                    // Animate value changes
+                    if (waterLevelEl) {
+                        const oldValue = waterLevelEl.textContent.replace('mm', '');
+                        animateMetricValue(waterLevelEl, waterLevel, oldValue);
+                    }
+                    if (humidityEl) {
+                        const oldValue = humidityEl.textContent.replace('%', '');
+                        animateMetricValue(humidityEl, humidity, oldValue);
+                    }
+                    if (dispatchEl) {
+                        const oldValue = dispatchEl.textContent.replace('MW', '');
+                        animateMetricValue(dispatchEl, dispatch, oldValue);
+                    }
+                    if (temperatureEl) {
+                        const oldValue = temperatureEl.textContent.replace('°C', '');
+                        animateMetricValue(temperatureEl, temperature, oldValue);
+                    }
+                    if (dischargeEl) {
+                        const oldValue = dischargeEl.textContent.replace('m³/s', '');
+                        animateMetricValue(dischargeEl, discharge, oldValue);
+                    }
+                    if (precipitationEl) {
+                        const oldValue = precipitationEl.textContent.replace('mm', '');
+                        animateMetricValue(precipitationEl, precipitation, oldValue);
+                    }
+                });
+            }
+
+            // Update dam data every 10 seconds
+            setInterval(updateDamData, 10000);
+
+            // Function to update dam sidebar (placeholder for future integration)
+            function updateDamSidebar(damId, damName) {
+                console.log(`Updating sidebar for ${damName} (ID: ${damId})`);
+                // This function can be expanded to update the dam sidebar with detailed information
+            }
+
+            // Add pulse effect to live indicator
+            function addPulseEffect() {
+                const liveIndicator = document.querySelector('.live-indicator');
+                if (liveIndicator) {
+                    liveIndicator.style.animation = 'pulse 2s infinite';
+                }
+            }
+
+            // Enhanced status indicators
+            function updateStatusIndicators() {
+                const statusIndicators = document.querySelectorAll('.status-indicator');
+                statusIndicators.forEach(indicator => {
+                    // Randomly change status for demonstration
+                    const statuses = ['online', 'warning', 'error'];
+                    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    // Only change occasionally (10% chance)
+                    if (Math.random() < 0.1) {
+                        indicator.className = `status-indicator ${randomStatus}`;
+                        
+                        const damCard = indicator.closest('.dam-card');
+                        const damName = damCard.querySelector('h4').textContent.split(' - ')[0];
+                        
+                        if (randomStatus === 'error') {
+                            showNotification(`${damName} - Critical Alert`, 'System error detected', 'error');
+                        } else if (randomStatus === 'warning') {
+                            showNotification(`${damName} - Warning`, 'System warning detected', 'warning');
+                        }
+                    }
+                });
+            }
+
+            // Initialize enhanced features
+            addPulseEffect();
+            
+            // Update status indicators every 30 seconds
+            setInterval(updateStatusIndicators, 30000);
+
+            // Chart placeholder interactions
+            const chartPlaceholders = document.querySelectorAll('.chart-placeholder');
+            chartPlaceholders.forEach(placeholder => {
+                placeholder.addEventListener('click', function() {
+                    const cardTitle = this.closest('.prediction-card').querySelector('h3').textContent;
+                    showNotification('Chart Interaction', `Opening detailed chart for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // GIS card interactions
+            const gisCards = document.querySelectorAll('.gis-card');
+            gisCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const cardTitle = this.querySelector('h3').textContent;
+                    showNotification('GIS Data', `Opening detailed GIS view for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Theme switching functionality
+        });
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#0896FC' : '#10b981'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Example usage
+        // showNotification('Welcome to Hydro-M!', 'success');
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="uegcl-logo.png" alt="UEGCL Logo">
+            </div>
+            <div class="footer-text">
+                <p>2023 Hydro-M, All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Prediction Chart Data and Configuration
+        const predictionData = {
+            // Historical real-time data (past 12 hours)
+            realTimeLabels: ['12h ago', '10h ago', '8h ago', '6h ago', '4h ago', '2h ago', 'Now'],
+            realTimeData: [1478, 1481, 1483, 1485, 1487, 1486, 1485],
+            
+            // Prediction data (next 12 hours)
+            predictionLabels: ['Now', '+2h', '+4h', '+6h', '+8h', '+10h', '+12h'],
+            predictionData: [1485, 1488, 1492, 1495, 1498, 1501, 1504],
+            
+            // Confidence intervals (upper and lower bounds)
+            upperBound: [1485, 1491, 1497, 1502, 1506, 1510, 1515],
+            lowerBound: [1485, 1485, 1487, 1488, 1490, 1492, 1493]
+        };
+
+        // Initialize Water Level Prediction Chart
+        function initializeWaterLevelChart() {
+            const ctx = document.getElementById('waterLevelPredictionChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...predictionData.realTimeLabels.slice(0, -1), ...predictionData.predictionLabels],
+                    datasets: [
+                        {
+                            label: 'Real-time Data',
+                            data: [...predictionData.realTimeData, null, null, null, null, null, null],
+                            borderColor: '#0896FC',
+                            backgroundColor: 'rgba(8, 150, 252, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#0896FC',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: 'Predictions',
+                            data: [null, null, null, null, null, null, ...predictionData.predictionData],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: '#374151',
+                                font: {
+                                    size: 12,
+                                    weight: 500
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return context.dataset.label + ': ' + context.parsed.y + ' mm';
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                callback: function(value) {
+                                    return value + ' mm';
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Initialize Confidence Interval Chart
+        function initializeConfidenceChart() {
+            const ctx = document.getElementById('confidenceIntervalChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: predictionData.predictionLabels,
+                    datasets: [
+                        {
+                            label: 'Upper Bound',
+                            data: predictionData.upperBound,
+                            borderColor: 'rgba(245, 158, 11, 0.5)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 1,
+                            fill: '+1'
+                        },
+                        {
+                            label: 'Prediction',
+                            data: predictionData.predictionData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#f59e0b',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Lower Bound',
+                            data: predictionData.lowerBound,
+                            borderColor: 'rgba(245, 158, 11, 0.5)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 1,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' mm';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                callback: function(value) {
+                                    return value + ' mm';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Model Accuracy Chart
+        function initializeModelAccuracyChart() {
+            const ctx = document.getElementById('modelAccuracyChart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: [91.2, 92.8, 93.5, 94.1, 94.2, 94.2],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            min: 90,
+                            max: 95
+                        }
+                    }
+                }
+            });
+        }
+
+        // Timeframe dropdown functionality
+        function initializeTimeframeSelector() {
+            const dropdown = document.getElementById('predictionTimeframe');
+            if (!dropdown) return;
+
+            dropdown.addEventListener('change', function() {
+                const timeframe = this.value;
+                updatePredictionData(timeframe);
+                showNotification(`Updated predictions for ${this.options[this.selectedIndex].text}`);
+            });
+        }
+
+        // Update prediction data based on timeframe
+        function updatePredictionData(timeframe) {
+            // This would typically fetch new data from an API
+            // For demo purposes, we'll just show a notification
+            console.log(`Updating predictions for ${timeframe}`);
+            
+            // Update the prediction change percentage based on timeframe
+            const changeElement = document.getElementById('predictionChange');
+            const changes = {
+                '24h': '+2.3%',
+                '48h': '+4.1%',
+                '7d': '+8.7%',
+                '30d': '+15.2%'
+            };
+            
+            if (changeElement && changes[timeframe]) {
+                changeElement.textContent = changes[timeframe];
+            }
+        }
+
+        // Notification system
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                font-size: 0.875rem;
+                font-weight: 500;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Hide and remove notification
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Simulate real-time data updates
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // Update current water level with small random variation
+                const currentLevelElement = document.getElementById('currentWaterLevel');
+                if (currentLevelElement) {
+                    const baseLevel = 1485;
+                    const variation = (Math.random() - 0.5) * 4; // ±2mm variation
+                    const newLevel = Math.round((baseLevel + variation) * 10) / 10;
+                    currentLevelElement.textContent = `${newLevel.toLocaleString()} mm`;
+                }
+                
+                // Update confidence level
+                const confidenceElement = document.getElementById('confidenceLevel');
+                if (confidenceElement) {
+                    const baseConfidence = 94.2;
+                    const variation = (Math.random() - 0.5) * 0.4; // ±0.2% variation
+                    const newConfidence = Math.round((baseConfidence + variation) * 10) / 10;
+                    confidenceElement.textContent = `${newConfidence}%`;
+                }
+            }, 30000); // Update every 30 seconds
+        }
+
+        // Metric Tooltip Data
+        const metricTooltips = {
+            mae: {
+                title: 'Mean Absolute Error (MAE)',
+                description: 'Measures the average magnitude of prediction errors in millimeters.',
+                interpretation: 'Our Result: ±2.3mm means predictions are typically within 2.3mm of actual values - excellent precision for water level forecasting.'
+            },
+            rmse: {
+                title: 'Root Mean Square Error (RMSE)',
+                description: 'Gives higher weight to larger prediction errors, providing insight into worst-case scenarios.',
+                interpretation: 'Our Result: ±3.1mm indicates that even larger errors are well-controlled and within acceptable engineering tolerances.'
+            },
+            r2: {
+                title: 'R² Score (Coefficient of Determination)',
+                description: 'Measures how well the model explains the variance in water levels, ranging from 0 to 1.',
+                interpretation: 'Our Result: 0.94 means the model explains 94% of water level variations - indicating very high predictive power.'
+            },
+            accuracy: {
+                title: '24-Hour Prediction Accuracy',
+                description: 'Percentage of 24-hour predictions that fall within acceptable error margins for operational decision-making.',
+                interpretation: 'Our Result: 94.2% accuracy provides high confidence for daily operational planning and risk management.'
+            }
+        };
+
+        // Initialize Metric Tooltips
+        function initializeMetricTooltips() {
+            const infoIcons = document.querySelectorAll('.metric-info-icon');
+            
+            infoIcons.forEach(icon => {
+                const metricType = icon.getAttribute('data-metric');
+                const tooltipData = metricTooltips[metricType];
+                
+                if (!tooltipData) return;
+                
+                // Create tooltip element
+                const tooltip = document.createElement('div');
+                tooltip.className = 'metric-tooltip';
+                tooltip.innerHTML = `
+                    <span class="tooltip-title">${tooltipData.title}</span>
+                    <div class="tooltip-description">${tooltipData.description}</div>
+                    <div class="tooltip-interpretation"><strong>Our Result:</strong> ${tooltipData.interpretation.replace('Our Result: ', '')}</div>
+                `;
+                
+                // Append tooltip to the wrapper (icon's parent)
+                icon.parentElement.appendChild(tooltip);
+                
+                // Show tooltip on hover
+                icon.addEventListener('mouseenter', function() {
+                    tooltip.classList.add('show');
+                });
+                
+                // Hide tooltip when mouse leaves
+                icon.addEventListener('mouseleave', function() {
+                    tooltip.classList.remove('show');
+                });
+                
+                // Toggle tooltip on click (for mobile)
+                icon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Hide all other tooltips
+                    document.querySelectorAll('.metric-tooltip.show').forEach(tip => {
+                        if (tip !== tooltip) {
+                            tip.classList.remove('show');
+                        }
+                    });
+                    
+                    // Toggle current tooltip
+                    tooltip.classList.toggle('show');
+                });
+            });
+            
+            // Hide tooltips when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.metric-info-icon')) {
+                    document.querySelectorAll('.metric-tooltip.show').forEach(tooltip => {
+                        tooltip.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // Initialize all components when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWaterLevelChart();
+            initializeConfidenceChart();
+            initializeModelAccuracyChart();
+            initializeTimeframeSelector();
+            simulateRealTimeUpdates();
+            initializeMetricTooltips();
+        });
+
+        // Handle window resize for responsive charts
+        window.addEventListener('resize', function() {
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.resize();
+            });
+        });
+
+        // Handle orientation change for mobile devices
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                Chart.helpers.each(Chart.instances, function(instance) {
+                    instance.resize();
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
