@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hydro-M Navigation</title>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -1922,6 +1924,75 @@
                 margin-bottom: 0.25rem;
             }
 
+            /* Chart container styles */
+            .chart-container {
+                position: relative;
+                height: 250px;
+                margin-bottom: 1rem;
+                background: #fafafa;
+                border-radius: 8px;
+                padding: 1rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .chart-container canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
+
+            /* Chart legend styles */
+            .chart-legend {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                margin-top: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-size: 0.875rem;
+                color: #666;
+            }
+
+            .legend-color {
+                width: 12px;
+                height: 12px;
+                border-radius: 2px;
+                display: inline-block;
+            }
+
+            /* Responsive chart adjustments */
+            @media (max-width: 768px) {
+                .chart-container {
+                    height: 200px;
+                    padding: 0.75rem;
+                }
+                
+                .chart-legend {
+                    gap: 1rem;
+                    margin-top: 0.75rem;
+                }
+                
+                .legend-item {
+                    font-size: 0.75rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .chart-container {
+                    height: 180px;
+                    padding: 0.5rem;
+                }
+                
+                .chart-legend {
+                    gap: 0.75rem;
+                    justify-content: space-around;
+                }
+            }
+
             /* White line mobile optimization */
             .white-line {
                 width: 60%;
@@ -2086,7 +2157,7 @@
                 <p>Real-time dam status and data</p>
             </div>
             <div class="dam-list">
-                <a href="#" class="dam-item featured">
+                <a href="./realtime.html" class="dam-item featured">
                     <div class="dam-icon">
                         <img src="dam.png" alt="Dam Icon">
                     </div>
@@ -2106,7 +2177,7 @@
                         <img src="dam.png" alt="Dam Icon">
                     </div>
                     <div class="dam-info">
-                        <h4>Kiira HPP</h4>
+                        <h4>Isimba HPP</h4>
                         <div class="dam-status">
                             <div class="status-item">
                                 <span class="status-label">Water Level:</span>
@@ -2119,50 +2190,6 @@
                             <div class="status-item">
                                 <span class="status-label">Discharge:</span>
                                 <span class="status-value">520 m³/s</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <a href="./realtime.html" class="dam-item">
-                    <div class="dam-icon">
-                        <img src="dam.png" alt="Dam Icon">
-                    </div>
-                    <div class="dam-info">
-                        <h4>Bujagali HPP</h4>
-                        <div class="dam-status">
-                            <div class="status-item">
-                                <span class="status-label">Water Level:</span>
-                                <span class="status-value">1520mm</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Dispatch:</span>
-                                <span class="status-value">250MW</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Discharge:</span>
-                                <span class="status-value">380 m³/s</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" class="dam-item">
-                    <div class="dam-icon">
-                        <img src="dam.png" alt="Dam Icon">
-                    </div>
-                    <div class="dam-info">
-                        <h4>Isimba HPP</h4>
-                        <div class="dam-status">
-                            <div class="status-item">
-                                <span class="status-label">Water Level:</span>
-                                <span class="status-value">1450mm</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Dispatch:</span>
-                                <span class="status-value">180MW</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Discharge:</span>
-                                <span class="status-value">450 m³/s</span>
                             </div>
                         </div>
                     </div>
@@ -2363,12 +2390,18 @@
                         <div class="dam-slide active" data-dam="wl-bujagali">
                             <h2 class="dam-title">Bujagali - Water Level Prediction</h2>
                             <div class="dam-metrics-graph">
-                                <div style="text-align: center; padding: 2rem;">
-                                    <h3 style="color: #0896FC; margin-bottom: 1rem;">📊 Prediction Chart</h3>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Current Level: 700m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Predicted Level: 730m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Confidence: 85%</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Time Period: 7 days</p>
+                                <div class="chart-container">
+                                    <canvas id="bujagaliChart" width="400" height="250"></canvas>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #0896FC;"></span>
+                                        <span>Real-time Data</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #10b981;"></span>
+                                        <span>Prediction Trend</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2377,12 +2410,18 @@
                         <div class="dam-slide" data-dam="wl-kiira">
                             <h2 class="dam-title">Kiira - Water Level Prediction</h2>
                             <div class="dam-metrics-graph">
-                                <div style="text-align: center; padding: 2rem;">
-                                    <h3 style="color: #0896FC; margin-bottom: 1rem;">📈 Prediction Chart</h3>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Current Level: 720m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Predicted Level: 750m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Confidence: 92%</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Time Period: 7 days</p>
+                                <div class="chart-container">
+                                    <canvas id="kiiraChart" width="400" height="250"></canvas>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #0896FC;"></span>
+                                        <span>Real-time Data</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #10b981;"></span>
+                                        <span>Prediction Trend</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2391,12 +2430,18 @@
                         <div class="dam-slide" data-dam="wl-isimba">
                             <h2 class="dam-title">Isimba - Water Level Prediction</h2>
                             <div class="dam-metrics-graph">
-                                <div style="text-align: center; padding: 2rem;">
-                                    <h3 style="color: #0896FC; margin-bottom: 1rem;">📊 Prediction Chart</h3>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Current Level: 680m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Predicted Level: 710m</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Confidence: 78%</p>
-                                    <p style="color: #666; margin-bottom: 0.5rem;">Time Period: 7 days</p>
+                                <div class="chart-container">
+                                    <canvas id="isimbaChart" width="400" height="250"></canvas>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #0896FC;"></span>
+                                        <span>Real-time Data</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background: #10b981;"></span>
+                                        <span>Prediction Trend</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2557,19 +2602,19 @@
                 <h4>Monitoring Category</h4>
                 <ul class="category-list">
                     <li class="category-item active">
-                        <a href="./realtime.html">
+                        <a href="#" class="dam-required-link" data-page="realtime">
                             <i class="fas fa-clock"></i>
                             Real-time
                         </a>
                     </li>
                     <li class="category-item">
-                        <a href="./gis.html">
+                        <a href="#" class="dam-required-link" data-page="gis">
                             <i class="fas fa-map-marker-alt"></i>
                             GIS Monitoring
                         </a>
                     </li>
                     <li class="category-item">
-                        <a href="./predictions.html">
+                        <a href="#" class="dam-required-link" data-page="predictions">
                             <i class="fas fa-chart-line"></i>
                             Predictions
                         </a>
@@ -2675,15 +2720,16 @@
             // Smooth navigation handling
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
                     // Get the href attribute
                     const href = this.getAttribute('href');
                     
                     // If it's not just a "#", handle navigation
                     if (href && href !== '#') {
-                        // Here you would typically navigate to the page
-                        console.log('Navigating to:', href);
+                        // Navigate to the page
+                        window.location.href = href;
+                    } else {
+                        // Only prevent default for placeholder links
+                        e.preventDefault();
                     }
                 });
             });
@@ -2691,11 +2737,22 @@
             // Add loading animation to logo
             const logo = document.querySelector('.logo');
             logo.addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    // Add animation then navigate
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                        window.location.href = href;
+                    }, 150);
+                    e.preventDefault(); // Prevent immediate navigation to allow animation
+                } else {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
             });
 
             // Dam sidebar functionality
@@ -2703,20 +2760,25 @@
             
             damItems.forEach(item => {
                 item.addEventListener('click', function(e) {
-                    e.preventDefault();
+                    const href = this.getAttribute('href');
                     
-                    // Remove active class from all dam items
-                    damItems.forEach(dam => dam.classList.remove('active'));
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Get dam name for navigation
-                    const damName = this.querySelector('h4').textContent;
-                    console.log('Selected dam:', damName);
-                    
-                    // Here you would typically navigate to the dam's detail page
-                    // or update the main content area
+                    if (href && href !== '#') {
+                        // Navigate to the linked page
+                        window.location.href = href;
+                    } else {
+                        // If no valid href, just update the UI state
+                        e.preventDefault();
+                        
+                        // Remove active class from all dam items
+                        damItems.forEach(dam => dam.classList.remove('active'));
+                        
+                        // Add active class to clicked item
+                        this.classList.add('active');
+                        
+                        // Get dam name for navigation
+                        const damName = this.querySelector('h4').textContent;
+                        console.log('Selected dam:', damName);
+                    }
                 });
             });
 
@@ -3229,8 +3291,194 @@
                 });
             });
 
+            // Dam selection prompt functionality
+            const damRequiredLinks = document.querySelectorAll('.dam-required-link');
+            damRequiredLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const page = this.getAttribute('data-page');
+                    const pageNames = {
+                        'realtime': 'Real-time Monitoring',
+                        'gis': 'GIS Monitoring', 
+                        'predictions': 'Predictions'
+                    };
+                    
+                    showNotification(
+                        `Please select a dam from the sidebar to access ${pageNames[page]} data.`, 
+                        'info'
+                    );
+                    
+                    // Optionally scroll to dam list to draw attention
+                    const damList = document.querySelector('.dam-list');
+                    if (damList) {
+                        damList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Add a subtle highlight effect to the dam list
+                        damList.style.transition = 'box-shadow 0.3s ease';
+                        damList.style.boxShadow = '0 0 20px rgba(8, 150, 252, 0.3)';
+                        setTimeout(() => {
+                            damList.style.boxShadow = '';
+                        }, 2000);
+                    }
+                });
+            });
+
+            // Initialize water level prediction charts
+            initializeWaterLevelCharts();
+
             // Theme switching functionality
         });
+
+        // Water Level Prediction Charts
+        function initializeWaterLevelCharts() {
+            // Generate dummy data for charts
+            const generateDummyData = (baseLevel, variation = 30) => {
+                const labels = [];
+                const realtimeData = [];
+                const predictionData = [];
+                
+                // Generate 14 days of data (7 past + 7 future)
+                for (let i = -7; i <= 7; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() + i);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    
+                    if (i <= 0) {
+                        // Real-time data (past and current)
+                        realtimeData.push(baseLevel + Math.random() * variation - variation/2);
+                        predictionData.push(null);
+                    } else {
+                        // Prediction data (future)
+                        realtimeData.push(null);
+                        predictionData.push(baseLevel + Math.random() * variation - variation/2 + i * 2);
+                    }
+                }
+                
+                return { labels, realtimeData, predictionData };
+            };
+
+            // Chart configuration template
+            const createChartConfig = (data) => ({
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Real-time Data',
+                        data: data.realtimeData,
+                        borderColor: '#0896FC',
+                        backgroundColor: 'rgba(8, 150, 252, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: '#0896FC',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }, {
+                        label: 'Prediction Trend',
+                        data: data.predictionData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // We'll use custom legend
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#0896FC',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}m`;
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                borderColor: 'rgba(0, 0, 0, 0.2)'
+                            },
+                            ticks: {
+                                color: '#666666',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                borderColor: 'rgba(0, 0, 0, 0.2)'
+                            },
+                            ticks: {
+                                color: '#666666',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(0) + 'm';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Water Level (m)',
+                                color: '#666666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Initialize charts for each dam
+            const dams = [
+                { id: 'bujagaliChart', baseLevel: 700 },
+                { id: 'kiiraChart', baseLevel: 720 },
+                { id: 'isimbaChart', baseLevel: 680 }
+            ];
+
+            dams.forEach(dam => {
+                const canvas = document.getElementById(dam.id);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    const data = generateDummyData(dam.baseLevel);
+                    const config = createChartConfig(data);
+                    
+                    new Chart(ctx, config);
+                }
+            });
+        }
 
         // Utility functions
         function showNotification(message, type = 'info') {

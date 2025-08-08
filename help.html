@@ -2668,19 +2668,19 @@
                 <h4>Monitoring Category</h4>
                 <ul class="category-list">
                     <li class="category-item active">
-                        <a href="#">
+                        <a href="#" class="dam-required-link" data-page="realtime">
                             <i class="fas fa-clock"></i>
                             Real-time
                         </a>
                     </li>
                     <li class="category-item">
-                        <a href="#">
+                        <a href="#" class="dam-required-link" data-page="gis">
                             <i class="fas fa-map-marker-alt"></i>
                             GIS Monitoring
                         </a>
                     </li>
                     <li class="category-item">
-                        <a href="#">
+                        <a href="#" class="dam-required-link" data-page="predictions">
                             <i class="fas fa-chart-line"></i>
                             Predictions
                         </a>
@@ -2786,15 +2786,16 @@
             // Smooth navigation handling
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
                     // Get the href attribute
                     const href = this.getAttribute('href');
                     
                     // If it's not just a "#", handle navigation
                     if (href && href !== '#') {
-                        // Here you would typically navigate to the page
-                        console.log('Navigating to:', href);
+                        // Navigate to the page
+                        window.location.href = href;
+                    } else {
+                        // Only prevent default for placeholder links
+                        e.preventDefault();
                     }
                 });
             });
@@ -2802,11 +2803,22 @@
             // Add loading animation to logo
             const logo = document.querySelector('.logo');
             logo.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    // Add animation then navigate
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                        window.location.href = href;
+                    }, 150);
+                    e.preventDefault(); // Prevent immediate navigation to allow animation
+                } else {
                 e.preventDefault();
                 this.style.transform = 'scale(0.95)';
                 setTimeout(() => {
                     this.style.transform = 'scale(1)';
                 }, 150);
+                }
             });
 
             // Dam sidebar functionality
@@ -3036,6 +3048,39 @@
                     setTimeout(() => {
                         this.style.transform = 'scale(1)';
                     }, 150);
+                });
+            });
+
+            // Dam selection prompt functionality
+            const damRequiredLinks = document.querySelectorAll('.dam-required-link');
+            damRequiredLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const page = this.getAttribute('data-page');
+                    const pageNames = {
+                        'realtime': 'Real-time Monitoring',
+                        'gis': 'GIS Monitoring', 
+                        'predictions': 'Predictions'
+                    };
+                    
+                    showNotification(
+                        `Please select a dam from the sidebar to access ${pageNames[page]} data.`, 
+                        'info'
+                    );
+                    
+                    // Optionally scroll to dam list to draw attention
+                    const damList = document.querySelector('.dam-list');
+                    if (damList) {
+                        damList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Add a subtle highlight effect to the dam list
+                        damList.style.transition = 'box-shadow 0.3s ease';
+                        damList.style.boxShadow = '0 0 20px rgba(8, 150, 252, 0.3)';
+                        setTimeout(() => {
+                            damList.style.boxShadow = '';
+                        }, 2000);
+                    }
                 });
             });
 
