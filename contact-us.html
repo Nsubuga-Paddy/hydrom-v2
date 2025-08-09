@@ -1,0 +1,5890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro-M Navigation</title>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Century Gothic', 'CenturyGothic', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #374151;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-toggle:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            color: #374151;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 0.95rem;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active {
+            color: #0896FC;
+            background-color: #f8fafc;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #0896FC;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .user-btn:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #0896FC;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-radius: 0.25rem;
+            margin: 0.25rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0896FC;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .login-btn:hover {
+            background: #0678d4;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 70px;
+            left: -100%;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .mobile-nav.show {
+            left: 0;
+        }
+
+        /* Dam Sidebar Styles */
+        .dam-sidebar {
+            padding: 1rem;
+        }
+
+        .dam-sidebar-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-sidebar-header h3 {
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-sidebar-header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .dam-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dam-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dam-item:hover {
+            border-color: #0896FC;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .dam-item.featured {
+            background: linear-gradient(135deg, #0896FC, #0678d4);
+            color: white;
+            border-color: #0896FC;
+        }
+
+        .dam-item.featured .dam-info h4,
+        .dam-item.featured .dam-info p,
+        .dam-item.featured .dam-status {
+            color: white;
+        }
+
+        .dam-icon {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dam-item.featured .dam-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dam-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .dam-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .dam-info .location {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .dam-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .status-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .dam-item.featured .status-label,
+        .dam-item.featured .status-value {
+            color: white;
+        }
+
+        /* Mobile Navigation Menu (hidden on large screens) */
+        .mobile-nav-menu {
+            list-style: none;
+            padding: 1rem;
+            display: none;
+        }
+
+        .mobile-nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link:hover {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .mobile-nav-link.active {
+            background-color: #0896FC;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .dam-sidebar {
+                display: none;
+            }
+
+            .mobile-nav-menu {
+                display: block;
+            }
+        }
+
+        /* Content area for testing */
+        .content {
+            margin-top: 90px;
+            padding: 2rem;
+            margin-right: 320px; /* Make space for right sidebar */
+        }
+
+        .content h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .content p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .content ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+            color: #6b7280;
+        }
+
+        /* Right Sidebar Styles */
+        .right-sidebar {
+            position: fixed;
+            top: 70px;
+            right: 0;
+            width: 320px;
+            height: calc(100vh - 70px);
+            background: white;
+            border-left: 1px solid #e5e7eb;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 998;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-form {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .categories-section h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .category-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .category-item {
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-item.active {
+            background-color: #0896FC;
+        }
+
+        .category-item a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .category-item:hover a {
+            background-color: #f3f4f6;
+            color: #0896FC;
+        }
+
+        .category-item.active a {
+            color: white;
+        }
+
+        .category-item i {
+            font-size: 1rem;
+        }
+
+        /* Alarms Section */
+        .alarms-section {
+            padding: 1.5rem;
+        }
+
+        .alarms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .alarms-header h4 {
+            color: #1f2937;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .alarms-link {
+            color: #0896FC;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .alarms-link:hover {
+            color: #0678d4;
+        }
+
+        .alarms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .alarm-item {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .alarm-item.critical {
+            border-left: 3px solid #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .alarm-item.warning {
+            border-left: 3px solid #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .alarm-icon {
+            color: #6b7280;
+            font-size: 1rem;
+            margin-top: 0.125rem;
+        }
+
+        .alarm-item.critical .alarm-icon {
+            color: #ef4444;
+        }
+
+        .alarm-item.warning .alarm-icon {
+            color: #f59e0b;
+        }
+
+        .alarm-content h6 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .alarm-content p {
+            font-size: 0.7rem;
+            color: #6b7280;
+            line-height: 1.3;
+            margin-bottom: 0.25rem;
+        }
+
+        .alarm-time {
+            font-size: 0.65rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                width: 280px;
+            }
+            
+            .content {
+                margin-right: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .right-sidebar {
+                display: none;
+            }
+            
+            .content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 0;
+            margin-right: 320px;
+            margin-top: 70px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+            transition: margin-left 0.3s ease;
+            background: var(--bg-secondary);
+        }
+
+        .main-content.with-sidebar {
+            margin-left: 280px;
+        }
+
+        /* Real time Card */
+        .real-time-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 310px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .real-time-card-left {
+            background: #0896FC;
+            width: 210px;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .real-time-card-right {
+            background: white;
+            flex: 1;
+            padding: 0rem;
+        }
+
+        /* Water Level Prediction card */
+        .water-level-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 310px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .water-level-card-left {
+            background: #0896FC;
+            width: 210px;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .water-level-card-right {
+            background: white;
+            flex: 1;
+            padding: 0rem;
+        }
+
+        /* Water Level Carousel Styles */
+        .water-level-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .water-level-carousel .dam-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 1rem 0.5rem 1rem;
+        }
+
+        .water-level-carousel .dam-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        .water-level-carousel .dam-slide.prev {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+
+        .water-level-carousel .dam-slide:not(.active):not(.prev) {
+            z-index: 0;
+        }
+
+        .water-level-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+        }
+
+        .water-level-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% + -14px);
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            pointer-events: none;
+            z-index: 20;
+            left: 6px;
+        }
+
+        
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-subtitle {
+            color: var(--text-tertiary);
+            font-size: 1.125rem;
+        }
+
+        /* Monitoring Section Styles */
+        .monitoring-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Monitoring Grid */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Date/Time Card */
+        .datetime-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .datetime-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .datetime-content {
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Dam Status Cards */
+        .dam-status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dam-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dam-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+            transform: translateY(-2px);
+        }
+
+        .dam-card.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(8, 150, 252, 0.15);
+        }
+
+        .dam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .dam-header h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning-color);
+        }
+
+        .status-indicator.error {
+            background: var(--error-color);
+        }
+
+        .dam-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-item:hover {
+            background: var(--bg-secondary);
+            transform: scale(1.02);
+        }
+
+        .metric-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Prediction Grid */
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .prediction-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-tertiary);
+        }
+
+        .chart-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-placeholder small {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        /* GIS Grid */
+        .gis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gis-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px var(--shadow-primary);
+            transition: all 0.3s ease;
+        }
+
+        .gis-card:hover {
+            box-shadow: 0 4px 6px var(--shadow-secondary);
+        }
+
+        .gis-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design for Monitoring */
+        @media (max-width: 1200px) {
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .datetime-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .dam-status-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-row {
+                grid-template-columns: 1fr;
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: white;
+            border-top: 3px solid #0896FC;
+            padding: 0.75rem 2rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo img {
+            height: 25px;
+            width: auto;
+        }
+
+        .footer-text p {
+            color: #0896FC;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                gap: 0.75rem;
+            }
+            
+            .footer-logo img {
+                height: 20px;
+            }
+            
+            .footer-text p {
+                font-size: 0.7rem;
+            }
+        }
+
+        .monitoring-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .monitoring-header h3 {
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: capitalize;
+            text-align: center;
+        }
+
+        .white-line {
+            height: 2px;
+            background: white;
+            margin-bottom: 1.5rem;
+            opacity: 1;
+            width: 80%;
+            border-radius: 1px;
+        }
+
+        .datetime-display {
+            color: white;
+            text-align: center;
+        }
+
+        .date-info {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .time-info {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        /* Dam Data Section Styles */
+        .dam-data-section {
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .dam-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            text-align: center;
+            margin-top: 0.5rem;
+            background: #0896FC;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .dam-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            flex: 1;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 180px;
+            height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(8, 150, 252, 0.25);
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+            font-family: 'Courier New', monospace;
+            padding-bottom: 0.25rem;
+        }
+
+        .metric-separator {
+            width: 120px;
+            height: 2px;
+            background: white;
+            margin: 0 auto 0.25rem auto;
+            flex-shrink: 0;
+        }
+
+        .metric-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Real-time Carousel Styles */
+        .dam-carousel.real-time-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .real-time-carousel .dam-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 1rem 0.5rem 1rem;
+        }
+
+        .real-time-carousel .dam-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        .real-time-carousel .dam-slide.prev {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+
+        .real-time-carousel .dam-slide:not(.active):not(.prev) {
+            z-index: 0;
+        }
+
+        /* Real-time Carousel Navigation Dots */
+        .real-time-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 0.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+        }
+
+        .real-time-nav .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(8, 150, 252, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .real-time-nav .nav-dot.active {
+            background: #0896FC;
+            transform: scale(1.3);
+        }
+
+        .real-time-nav .nav-dot:hover {
+            background: rgba(8, 150, 252, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Real-time Carousel Control Buttons */
+        .real-time-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% + -14px);
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            pointer-events: none;
+            z-index: 20;
+            left: 6px;
+        }
+
+        .real-time-controls .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0896FC;
+            border: 2px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .real-time-controls .carousel-btn:hover {
+            background: #0678d4;
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .real-time-controls .carousel-btn:active {
+            transform: scale(0.95);
+        }
+
+        .real-time-controls .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Water Level Carousel Styles */
+        .water-level-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .water-level-carousel .dam-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 1rem 0.5rem 1rem;
+        }
+
+        .water-level-carousel .dam-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        .water-level-carousel .dam-slide.prev {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+
+        .water-level-carousel .dam-slide:not(.active):not(.prev) {
+            z-index: 0;
+        }
+
+        .water-level-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+        }
+
+        .water-level-nav .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(8, 150, 252, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .water-level-nav .nav-dot.active {
+            background: #0896FC;
+            transform: scale(1.3);
+        }
+
+        .water-level-nav .nav-dot:hover {
+            background: rgba(8, 150, 252, 0.6);
+            transform: scale(1.1);
+        }
+
+        .water-level-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% + -14px);
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            pointer-events: none;
+            z-index: 20;
+            left: 6px;
+        }
+
+        .water-level-controls .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0896FC;
+            border: 2px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .water-level-controls .carousel-btn:hover {
+            background: #0678d4;
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .water-level-controls .carousel-btn:active {
+            transform: scale(0.95);
+        }
+
+        .water-level-controls .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* GIS Monitoring card */
+        .gis-card {
+            background: #0896FC;
+            border-radius: 0.75rem;
+            padding: 0;
+            box-shadow: 0 4px 6px rgba(8, 150, 252, 0.15);
+            min-height: 310px;
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .gis-card-left {
+            background: #0896FC;
+            width: 210px;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gis-card-right {
+            background: white;
+            flex: 1;
+            padding: 0rem;
+        }
+
+        /* GIS monitoring Carousel Styles */
+        .gis-carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .gis-carousel .dam-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 1rem 0.5rem 1rem;
+            z-index: 0;
+        }
+
+        .gis-carousel .dam-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 2;
+        }
+
+        .gis-carousel .dam-slide.prev {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+
+        .gis-carousel .dam-slide:not(.active):not(.prev) {
+            z-index: 0;
+        }
+
+        .gis-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+        }
+
+        .gis-nav .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(8, 150, 252, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gis-nav .nav-dot.active {
+            background: #0896FC;
+            transform: scale(1.3);
+        }
+
+        .gis-nav .nav-dot:hover {
+            background: rgba(8, 150, 252, 0.6);
+            transform: scale(1.1);
+        }
+
+        .gis-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% + -14px);
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            pointer-events: none;
+            z-index: 20;
+            left: 6px;
+        }
+
+        .gis-controls .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0896FC;
+            border: 2px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .gis-controls .carousel-btn:hover {
+            background: #0678d4;
+            transform: scale(1.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .gis-controls .carousel-btn:active {
+            transform: scale(0.95);
+        }
+
+        .gis-controls .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* GIS specific grid layout - 2x2 format */
+        .gis-carousel .dam-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            flex: 1;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+
+
+
+
+
+
+        /* Responsive Design for Dam Metrics */
+        @media (max-width: 1200px) {
+            .dam-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            /* Ensure GIS grid maintains 2x2 layout */
+            .gis-carousel .dam-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Main content adjustments for mobile */
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+                margin-top: 80px;
+                margin-bottom: 80px;
+            }
+
+            /* Real-time card mobile optimization */
+            .real-time-card {
+                flex-direction: column;
+                min-height: auto;
+                margin-bottom: 1.5rem;
+            }
+
+            .real-time-card-left {
+                width: 100%;
+                padding: 1.5rem;
+                min-height: 120px;
+            }
+
+            .real-time-card-right {
+                padding: 1rem;
+            }
+
+            .monitoring-header h3 {
+                font-size: 1rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .datetime-display {
+                font-size: 0.875rem;
+            }
+
+            .date-info {
+                font-size: 0.75rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .time-info {
+                font-size: 1rem;
+            }
+
+            /* Water level card mobile optimization */
+            .water-level-card {
+                flex-direction: column;
+                min-height: auto;
+                margin-bottom: 1.5rem;
+            }
+
+            .water-level-card-left {
+                width: 100%;
+                padding: 1.5rem;
+                min-height: 100px;
+            }
+
+            .water-level-card-right {
+                padding: 1rem;
+            }
+
+            /* GIS card mobile optimization */
+            .gis-card {
+                flex-direction: column;
+                min-height: auto;
+                margin-bottom: 1.5rem;
+            }
+
+            .gis-card-left {
+                width: 100%;
+                padding: 1.5rem;
+                min-height: 100px;
+            }
+
+            .gis-card-right {
+                padding: 1rem;
+            }
+
+            /* Dam title mobile optimization */
+            .dam-title {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+                padding: 0.5rem 0.75rem;
+                width: 100%;
+            }
+
+            /* Metrics grid mobile optimization */
+            .dam-metrics-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            /* GIS specific grid - maintain 2x2 on mobile */
+            .gis-carousel .dam-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            /* Metric cards mobile optimization */
+            .metric-card {
+                width: 100%;
+                height: 80px;
+                padding: 0.5rem;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .metric-value {
+                font-size: 1.125rem;
+                margin-bottom: 0.25rem;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .metric-separator {
+                width: 70%;
+                height: 1px;
+                margin: 0.25rem auto;
+                background: white;
+                flex-shrink: 0;
+            }
+
+            .metric-label {
+                font-size: 0.8rem;
+                line-height: 1.1;
+                text-align: center;
+                font-weight: 500;
+            }
+
+            /* Carousel controls mobile optimization */
+            .real-time-controls,
+            .water-level-controls,
+            .gis-controls {
+                width: calc(100% + 20px);
+                left: -10px;
+            }
+
+            .real-time-controls .carousel-btn,
+            .water-level-controls .carousel-btn,
+            .gis-controls .carousel-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            /* Carousel navigation dots mobile optimization */
+            .real-time-nav,
+            .water-level-nav,
+            .gis-nav {
+                bottom: 0.25rem;
+            }
+
+            .real-time-nav .nav-dot,
+            .water-level-nav .nav-dot,
+            .gis-nav .nav-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            /* Dam data section mobile optimization */
+            .dam-data-section {
+                padding: 0;
+                height: auto;
+                min-height: 350px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Carousel slides mobile optimization */
+            .dam-slide {
+                padding: 0 0.5rem 1rem 0.5rem;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            /* Ensure carousel takes full available height */
+            .real-time-carousel,
+            .water-level-carousel,
+            .gis-carousel {
+                flex: 1;
+                min-height: 280px;
+            }
+
+            /* Water level prediction content mobile optimization */
+            .dam-metrics-graph {
+                padding: 1rem;
+            }
+
+            .dam-metrics-graph h3 {
+                font-size: 1.125rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .dam-metrics-graph p {
+                font-size: 0.875rem;
+                margin-bottom: 0.25rem;
+            }
+
+            /* Chart container styles */
+            .chart-container {
+                position: relative;
+                height: 250px;
+                margin-bottom: 1rem;
+                background: #fafafa;
+                border-radius: 8px;
+                padding: 1rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .chart-container canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
+
+            /* Responsive chart adjustments */
+            @media (max-width: 768px) {
+                .chart-container {
+                    height: 200px;
+                    padding: 0.75rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .chart-container {
+                    height: 180px;
+                    padding: 0.5rem;
+                }
+            }
+
+            /* White line mobile optimization */
+            .white-line {
+                width: 60%;
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Dam Popup Modal Styles */
+        .dam-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .dam-popup-modal.show {
+            display: flex;
+        }
+
+        .dam-popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .dam-popup-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: modalSlideUp 0.3s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dam-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-popup-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-close {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .dam-popup-body {
+            padding: 1rem 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .dam-popup-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dam-popup-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-item:hover {
+            background: #f8fafc;
+        }
+
+        .dam-popup-item:last-child {
+            border-bottom: none;
+        }
+
+        .dam-popup-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .dam-popup-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .dam-popup-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-popup-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-info p {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-arrow {
+            color: #9ca3af;
+            margin-left: 1rem;
+        }
+
+        .dam-popup-item:hover .dam-popup-arrow {
+            color: #0896FC;
+            transform: translateX(2px);
+        }
+
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+
+            .real-time-card-left,
+            .water-level-card-left,
+            .gis-card-left {
+                padding: 1rem;
+                min-height: 100px;
+            }
+
+            .real-time-card-right,
+            .water-level-card-right,
+            .gis-card-right {
+                padding: 0.75rem;
+            }
+
+            /* Optimize for very small screens - use 2x3 grid for real-time */
+            .dam-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .gis-carousel .dam-metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .metric-card {
+                height: 75px;
+                padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .metric-value {
+                font-size: 1rem;
+                margin-bottom: 0.25rem;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .metric-separator {
+                width: 60%;
+                height: 1px;
+                margin: 0.25rem auto;
+                background: white;
+                flex-shrink: 0;
+            }
+
+            .metric-label {
+                font-size: 0.75rem;
+                line-height: 1.1;
+                text-align: center;
+                font-weight: 500;
+            }
+
+            .dam-title {
+                font-size: 1.125rem;
+                padding: 0.5rem;
+            }
+
+            .monitoring-header h3 {
+                font-size: 0.875rem;
+            }
+
+            .datetime-display {
+                font-size: 0.75rem;
+            }
+
+            .date-info {
+                font-size: 0.7rem;
+            }
+
+            .time-info {
+                font-size: 0.875rem;
+            }
+
+            .white-line {
+                width: 50%;
+                margin-bottom: 0.75rem;
+            }
+        }
+        /* Chat Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Chat Overlay Background */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chat-overlay.show {
+            opacity: 1;
+            visibility: visible;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Chat Toggle Button - LinkedIn Style */
+        .chat-toggle {
+            width: auto;
+            min-width: 120px;
+            height: 56px;
+            background: #0896FC;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(8, 150, 252, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            border: none;
+            padding: 0 20px;
+            gap: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-toggle:hover {
+            background: #0678d1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(8, 150, 252, 0.4);
+        }
+
+        .chat-toggle .chat-text {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-toggle .chat-arrow {
+            color: white;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .chat-toggle:hover .chat-arrow {
+            transform: translateY(-2px);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Maximized chat window - positioned fixed to cover full screen */
+        .chat-window.maximized {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            z-index: 1001 !important;
+        }
+
+        /* Enhanced chat window when overlay is active */
+        .chat-overlay.show + .chat-widget .chat-window.show {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* Desktop Responsive Design for Chat */
+        @media (max-width: 1200px) {
+            .chat-window {
+                width: 350px;
+                height: 500px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .chat-window {
+                width: 320px;
+                height: 450px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .chat-window {
+                width: 300px;
+                height: 400px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        /* Responsive Design for Chat */
+        @media (max-width: 768px) {
+            .chat-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .chat-toggle {
+                min-width: 100px;
+                height: 48px;
+                padding: 0 16px;
+                font-size: 13px;
+            }
+            
+            .chat-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+                right: -20px;
+                bottom: 60px;
+            }
+        }
+
+        /* Enhanced Chat Window Features */
+        .chat-window {
+            resize: both;
+            min-width: 280px;
+            min-height: 350px;
+            max-width: 90vw;
+            max-height: 80vh;
+            transition: all 0.3s ease;
+        }
+
+        .chat-window:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chat window when maximized */
+        .chat-window.maximized {
+            border-radius: 8px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-window.maximized .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-window.maximized .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .chat-window.maximized .chat-sidebar {
+            min-width: 280px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        /* Mobile optimizations for maximized chat */
+        @media (max-width: 768px) {
+            .chat-window.maximized {
+                border-radius: 4px;
+            }
+            
+            .chat-window.maximized .chat-sidebar {
+                min-width: 200px;
+            }
+            
+            .chat-window.maximized .chat-content {
+                min-width: 0;
+            }
+        }
+
+        /* Ensure chat content is scrollable */
+        .chat-messages {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Better spacing for small screens */
+        @media (max-width: 1200px) {
+            .chat-window {
+                font-size: 14px;
+            }
+            
+            .chat-header {
+                padding: 0.75rem;
+            }
+            
+            .chat-nav {
+                padding: 0.5rem;
+            }
+        }
+
+        .chat-window.show {
+            display: flex;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: #0896FC;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .chat-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Chat Navigation */
+        .chat-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .chat-nav-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .chat-nav-btn:hover {
+            background: #f1f5f9;
+            color: #374151;
+        }
+
+        .chat-nav-btn.active {
+            color: #0896FC;
+            background: white;
+            border-bottom-color: #0896FC;
+        }
+
+        /* Chat Content Layout */
+        .chat-window > div:not(.chat-header):not(.chat-nav) {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Chat Sidebar */
+        .chat-sidebar {
+            width: 200px;
+            background: #f8fafc;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+        }
+
+        .chat-list {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-list.active {
+            display: flex;
+        }
+
+        .chat-list-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .chat-add-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .chat-add-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .chat-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            gap: 0.75rem;
+        }
+
+        .chat-item:hover {
+            background: #f1f5f9;
+        }
+
+        .chat-item.active {
+            background: #0896FC;
+            color: white;
+        }
+
+        .chat-item.active .unread-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .chat-item i {
+            color: #6b7280;
+            font-size: 0.875rem;
+            width: 16px;
+        }
+
+        .chat-item.active i {
+            color: white;
+        }
+
+        .chat-item span:not(.unread-count) {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .unread-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #0896FC;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-avatar.online::after {
+            background: #10b981;
+        }
+
+        .user-avatar.away::after {
+            background: #f59e0b;
+        }
+
+        .user-avatar.offline::after {
+            background: #6b7280;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item.active .user-name,
+        .chat-item.active .user-role {
+            color: white;
+        }
+
+        /* Chat Content */
+        .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Chat Header Info */
+        .chat-header-info {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-channel-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chat-channel-info i {
+            color: #0896FC;
+            font-size: 1.25rem;
+        }
+
+        .chat-channel-info h4 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .chat-channel-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Message Groups */
+        .message-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0896FC;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        .message-role {
+            color: #6b7280;
+            font-size: 0.75rem;
+            background: #f3f4f6;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        .message-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .message-text {
+            color: #374151;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+            background: white;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .chat-attachment-btn,
+        .chat-emoji-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-attachment-btn:hover,
+        .chat-emoji-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .chat-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .chat-send-btn {
+            background: #0896FC;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .chat-send-btn:hover {
+            background: #0678d1;
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chat-window {
+                width: 350px;
+                height: 500px;
+            }
+
+            .chat-sidebar {
+                width: 160px;
+            }
+
+            .chat-item {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .chat-messages {
+                padding: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: 320px;
+                height: 450px;
+                bottom: 70px;
+                right: -10px;
+            }
+
+            .chat-sidebar {
+                width: 140px;
+            }
+
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+
+            .chat-input-wrapper {
+                padding: 0.375rem;
+            }
+
+            .chat-send-btn {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        /* ================================
+           CONTACT PAGE MODERN STYLES
+           ================================ */
+
+        /* CSS Variables for System Colors */
+        :root {
+            --primary-blue: #0896FC;
+            --secondary-blue: #0678d4;
+            --accent-blue: #2563eb;
+            --text-primary: #1f2937;
+            --text-secondary: #374151;
+            --text-tertiary: #6b7280;
+            --background-light: #f5f5f5;
+            --background-lighter: #f3f4f6;
+            --background-white: #f8fafc;
+            --border-light: #e5e7eb;
+            --border-medium: #d1d5db;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --error-red: #ef4444;
+        }
+
+        /* Main Contact Grid Layout */
+        .contact-main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            align-items: start;
+        }
+
+        /* Contact Form Section (Left) */
+        .contact-form-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(8, 150, 252, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
+            padding: 3rem;
+            border: 2px solid rgba(8, 150, 252, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 4rem;
+        }
+
+        .contact-form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        .contact-form-section:hover {
+            box-shadow: 0 20px 60px rgba(8, 150, 252, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            border-color: rgba(8, 150, 252, 0.2);
+        }
+
+        .form-card h2 {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .form-card h2 i {
+            font-size: 1.75rem;
+            color: var(--secondary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        /* Contact Form Styles */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: #d1d5db;
+            background-color: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--accent-blue);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .checkbox-group a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 1rem 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 160px;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(8, 150, 252, 0.3);
+            text-decoration: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(8, 150, 252, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid #e5e7eb;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Map Section (Right) */
+        .contact-map-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            height: fit-content;
+            margin-bottom: 4rem;
+        }
+
+        .contact-map-section:hover {
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .map-card h2 {
+            color: var(--primary-blue);
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .map-card h2 i {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+        }
+
+        .map-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .map-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-map,
+        .btn-directions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-map {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-map:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-directions {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-directions:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Bottom Contact Information Section */
+        /* Section Dividers */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 1.5rem;
+        }
+
+        .divider-line {
+            height: 2px;
+            flex: 1;
+            max-width: 200px;
+            background: linear-gradient(90deg, transparent, rgba(8, 150, 252, 0.3), transparent);
+            border-radius: 1px;
+        }
+
+        .divider-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(8, 150, 252, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .contact-info-bottom {
+            margin-top: 2rem;
+            padding: 3rem 0;
+            border-top: 2px solid #f3f4f6;
+            width: 100%;
+        }
+
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: start;
+            width: 100%;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(8, 150, 252, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
+            padding: 3rem;
+            border: 2px solid rgba(8, 150, 252, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+        }
+
+        .info-card:hover {
+            box-shadow: 0 20px 60px rgba(8, 150, 252, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            border-color: rgba(8, 150, 252, 0.2);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(8, 150, 252, 0.1);
+            position: relative;
+        }
+
+        .info-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
+            border-radius: 1px;
+        }
+
+        .info-header i {
+            font-size: 1.75rem;
+            color: var(--accent-blue);
+        }
+
+        .info-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .contact-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            width: 100%;
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            border: 1px solid rgba(8, 150, 252, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(8, 150, 252, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(8, 150, 252, 0.1);
+        }
+
+        .contact-icon {
+            background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(8, 150, 252, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(8, 150, 252, 0.35);
+        }
+
+        .contact-details h4 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .contact-details p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .contact-details small {
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* Emergency Contact Card */
+        .emergency-card-bottom {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            border: 2px solid #fbbf24;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .emergency-card-bottom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+        }
+
+        .emergency-card-bottom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(245, 158, 11, 0.2);
+        }
+
+        .emergency-header {
+            border-bottom-color: #fbbf24;
+        }
+
+        .emergency-header i {
+            color: #f59e0b;
+        }
+
+        .emergency-header h3 {
+            color: #92400e;
+        }
+
+        .emergency-content p {
+            color: #92400e;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .emergency-contacts {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .emergency-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 1px solid #fbbf24;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(5px);
+        }
+
+        .emergency-item i {
+            color: #f59e0b;
+            font-size: 1.25rem;
+            width: 24px;
+        }
+
+        .emergency-phone,
+        .emergency-email {
+            color: #92400e;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .emergency-phone:hover,
+        .emergency-email:hover {
+            color: #7c2d12;
+            text-decoration: underline;
+        }
+
+        .emergency-item span {
+            color: #a16207;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .emergency-note {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .emergency-note i {
+            color: #f59e0b;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .emergency-note p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Character Counter */
+        .character-counter {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            text-align: right;
+            margin-top: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        /* Form Validation States */
+        .form-group input.error,
+        .form-group select.error,
+        .form-group textarea.error {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .form-group input.success,
+        .form-group select.success,
+        .form-group textarea.success {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .contact-main-grid {
+                gap: 2rem;
+            }
+            
+            .contact-form-section,
+            .contact-map-section {
+                padding: 2rem;
+            }
+            
+            .contact-details-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .contact-info-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .contact-main-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .contact-form-section,
+            .contact-map-section {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .section-divider {
+                margin: 1.5rem 0;
+                gap: 1rem;
+            }
+            
+            .divider-line {
+                max-width: 120px;
+            }
+            
+            .divider-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                justify-content: center;
+            }
+            
+            .map-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .contact-details-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .emergency-contacts {
+                gap: 0.75rem;
+            }
+            
+            .emergency-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            
+            .emergency-item span {
+                margin-left: 0;
+                margin-top: 0.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .contact-form-section,
+            .contact-map-section,
+            .info-card,
+            .emergency-card-bottom {
+                padding: 1.25rem;
+            }
+            
+            .form-card h2,
+            .map-card h2,
+            .info-header h3 {
+                font-size: 1.4rem;
+            }
+            
+            .contact-form-section,
+            .contact-map-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .section-divider {
+                margin: 1rem 0;
+                gap: 0.75rem;
+            }
+            
+            .divider-line {
+                max-width: 80px;
+            }
+            
+            .divider-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            
+            .contact-info-bottom {
+                margin-top: 1.5rem;
+                padding: 1.5rem 0;
+            }
+            
+            .contact-info-grid {
+                gap: 1.5rem;
+            }
+            
+            .info-card {
+                padding: 2rem;
+                border-radius: 16px;
+            }
+            
+            .contact-details-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .contact-item {
+                padding: 1.25rem;
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            
+            .contact-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .map-container iframe {
+                height: 300px;
+            }
+        }
+
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="./index.html" class="logo">
+                <img src="logo.png" alt="Hydro-M Logo">
+            </a>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="./index.html" class="nav-link active">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="./system-alarms.html" class="nav-link">System Alarms</a>
+            </li>
+            <li class="nav-item">
+                <a href="./about-us.html" class="nav-link">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./contact-us.html" class="nav-link">Contact Us</a>
+            </li>
+            <li class="nav-item">
+                <a href="./download-data.html" class="nav-link">Download Data</a>
+            </li>
+            <li class="nav-item">
+                <a href="./help.html" class="nav-link">Help</a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user"></i>
+                    <span>Paddy</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user-cog"></i>
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="dam-sidebar">
+            <div class="dam-sidebar-header">
+                <h3>THE CASCADE</h3>
+                <p>Real-time dam status and data</p>
+            </div>
+            <div class="dam-list">
+                <a href="./realtime.html" class="dam-item featured">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Lake Nalubaale</h4>
+                        <p class="location">Jinja Pier</p>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1500mm</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href="./realtime.html" class="dam-item">
+                    <div class="dam-icon">
+                        <img src="dam.png" alt="Dam Icon">
+                    </div>
+                    <div class="dam-info">
+                        <h4>Isimba HPP</h4>
+                        <div class="dam-status">
+                            <div class="status-item">
+                                <span class="status-label">Water Level:</span>
+                                <span class="status-value">1480mm</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Dispatch:</span>
+                                <span class="status-value">200MW</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Discharge:</span>
+                                <span class="status-value">520 m³/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <ul class="mobile-nav-menu">
+            <li class="mobile-nav-item">
+                <a href="./index.html" class="mobile-nav-link active">Dashboard</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./system-alarms.html" class="mobile-nav-link">System Alarms</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="#" class="mobile-nav-link" id="damsMobileLink">Dams</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./about-us.html" class="mobile-nav-link">About Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./contact-us.html" class="mobile-nav-link">Contact Us</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./download-data.html" class="mobile-nav-link">Download Data</a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="./help.html" class="mobile-nav-link">Help</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Dam Selection Popup Modal -->
+    <div id="damPopupModal" class="dam-popup-modal">
+        <div class="dam-popup-content">
+            <div class="dam-popup-header">
+                <h3>Select a Dam</h3>
+                <button class="dam-popup-close" id="damPopupClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="dam-popup-body">
+                <div class="dam-popup-list">
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Lake Nalubaale</h4>
+                            <p>Jinja Pier - Real-time Monitoring</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Isimba HPP</h4>
+                            <p>Hydroelectric Power Plant</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="dam-popup-overlay"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="mainContent">
+        <!-- Contact Page Header -->
+        <div class="page-header">
+            <h1>Contact Us</h1>
+            <p>Get in touch with our team for any questions, feedback, or support regarding the Hydro-M Dam Monitoring System.</p>
+        </div>
+
+                        <!-- Contact Content Grid -->
+        <!-- Contact Form Section - Full Width -->
+        <div class="contact-form-section">
+            <div class="form-card">
+                <h2><i class="fas fa-envelope"></i> Send us a Message</h2>
+                <p>We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.</p>
+        
+                <form class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="organization">Organization/Company</label>
+                        <input type="text" id="organization" name="organization">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Please select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="dam-data">Dam Data Request</option>
+                            <option value="system-issue">System Issue Report</option>
+                            <option value="feedback">Feedback & Suggestions</option>
+                            <option value="partnership">Partnership Opportunity</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority">Priority Level</label>
+                        <select id="priority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="6" placeholder="Please provide detailed information about your inquiry, comments, or feedback..." required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section Divider -->
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Map Section - Full Width -->
+        <div class="contact-map-section">
+            <!-- Google Maps -->
+            <div class="map-card">
+                <h2><i class="fas fa-map"></i> Find Us</h2>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7461305802562!2d32.5911974740019!3d0.34466686398405694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbbb20980436b%3A0xfc1d7682397704fa!2sUganda%20Electricity%20Generation%20Company%20Limited!5e0!3m2!1sen!2sug!4v1691804358574!5m2!1sen!2sug"
+                        width="100%" 
+                        height="300" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="UEGCL Office Location">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="emergency-card">
+                <h2><i class="fas fa-exclamation-triangle"></i> Emergency Contact</h2>
+                <p>For urgent dam monitoring issues or emergencies:</p>
+                <div class="emergency-contact">
+                    <a href="tel:+256414349300" class="emergency-phone">
+                        <i class="fas fa-phone-alt"></i> +256 414 349 300
+                    </a>
+                    <a href="mailto:emergency@uegcl.co.ug" class="emergency-email">
+                        <i class="fas fa-envelope-open-text"></i> emergency@uegcl.co.ug
+                    </a>
+                </div>
+                <small>Available 24/7 for critical system alerts</small>
+            </div>
+        </div>
+
+        <!-- Section Divider -->
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Bottom Section: Contact Information & Emergency -->
+        <div class="contact-info-bottom">
+            <!-- Contact Information Cards -->
+            <div class="contact-info-grid">
+                <div class="info-card">
+                    <div class="info-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Contact Information</h3>
+                    </div>
+                    <div class="contact-details-grid">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Office Address</h4>
+                                <p>Uganda Electricity Generation Company Ltd (UEGCL)<br>
+                                Plot 39-43 Jinja Road, Nakasero<br>
+                                P.O. Box 7366, Kampala, Uganda</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Phone Numbers</h4>
+                                <p>Main Office: +256 414 349 200<br>
+                                Emergency Line: +256 414 349 300<br>
+                                Technical Support: +256 414 349 250</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Email Addresses</h4>
+                                <p>General: info@uegcl.co.ug<br>
+                                Technical: support@uegcl.co.ug<br>
+                                Dam Monitoring: dams@uegcl.co.ug</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Office Hours</h4>
+                                <p>Monday - Friday: 8:00 AM - 5:00 PM<br>
+                                Saturday: 9:00 AM - 1:00 PM<br>
+                                Sunday: Closed<br>
+                                <small>(Emergency support available 24/7)</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+        <div class="sidebar-card">
+            <!-- Search Section -->
+            <div class="search-section">
+                <form class="search-form">
+                    <input type="text" placeholder="Search dam reservoirs..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Monitoring Categories -->
+            <div class="categories-section">
+                <h4>Monitoring Category</h4>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <a href="#" class="dam-required-link" data-page="realtime">
+                            <i class="fas fa-clock"></i>
+                            Real-time
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#" class="dam-required-link" data-page="gis">
+                            <i class="fas fa-map-marker-alt"></i>
+                            GIS Monitoring
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a href="#" class="dam-required-link" data-page="predictions">
+                            <i class="fas fa-chart-line"></i>
+                            Predictions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Alarms Section -->
+            <div class="alarms-section">
+                <div class="alarms-header">
+                    <h4>System Alarms</h4>
+                    <a href="./system-alarms.html" class="alarms-link">View All (5)</a>
+                </div>
+                <div class="alarms-list">
+                    <div class="alarm-item critical">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Nalubaale HPP</h6>
+                            <p>The water level has passed the normal and expected level.</p>
+                            <span class="alarm-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Kiira HPP</h6>
+                            <p>Reservoir past active volume just as expected.</p>
+                            <span class="alarm-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="alarm-item warning">
+                        <div class="alarm-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="alarm-content">
+                            <h6>Bujagali HPP</h6>
+                            <p>Water level approaching critical threshold.</p>
+                            <span class="alarm-time">8 min ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Navigation JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileNav.classList.toggle('show');
+            });
+
+            // User dropdown toggle
+            const userBtn = document.getElementById('userBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            
+            userBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-dropdown')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+
+            // Close mobile nav when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.navbar') && !e.target.closest('.mobile-nav')) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Navigation link active state
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                });
+            });
+
+            // Close mobile nav on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    mobileNav.classList.remove('show');
+                }
+            });
+
+            // Smooth navigation handling
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Get the href attribute
+                    const href = this.getAttribute('href');
+                    
+                    // If it's not just a "#", handle navigation
+                    if (href && href !== '#') {
+                        // Navigate to the page
+                        window.location.href = href;
+                    } else {
+                        // Only prevent default for placeholder links
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Add loading animation to logo
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    // Add animation then navigate
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                        window.location.href = href;
+                    }, 150);
+                    e.preventDefault(); // Prevent immediate navigation to allow animation
+                } else {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+
+            // Dam sidebar functionality
+            const damItems = document.querySelectorAll('.dam-item');
+            
+            damItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    if (href && href !== '#') {
+                        // Navigate to the linked page
+                        window.location.href = href;
+                    } else {
+                        // If no valid href, just update the UI state
+                        e.preventDefault();
+                        
+                        // Remove active class from all dam items
+                        damItems.forEach(dam => dam.classList.remove('active'));
+                        
+                        // Add active class to clicked item
+                        this.classList.add('active');
+                        
+                        // Get dam name for navigation
+                        const damName = this.querySelector('h4').textContent;
+                        console.log('Selected dam:', damName);
+                    }
+                });
+            });
+
+            // Real-time clock functionality
+            function updateClock() {
+                try {
+                    const now = new Date();
+                    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    
+                    // Check if old clock elements exist before updating
+                    const daynameEl = document.getElementById('dayname');
+                    const monthEl = document.getElementById('month');
+                    const daynumEl = document.getElementById('daynum');
+                    const yearEl = document.getElementById('year');
+                    const hourEl = document.getElementById('hour');
+                    const minutesEl = document.getElementById('minutes');
+                    const secondsEl = document.getElementById('seconds');
+                    const periodEl = document.getElementById('period');
+                    
+                    // Only update if elements exist
+                    if (daynameEl) daynameEl.textContent = days[now.getDay()];
+                    if (monthEl) monthEl.textContent = months[now.getMonth()];
+                    if (daynumEl) daynumEl.textContent = now.getDate();
+                    if (yearEl) yearEl.textContent = now.getFullYear();
+                    
+                    let hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const seconds = now.getSeconds();
+                    const period = hours >= 12 ? 'PM' : 'AM';
+                    
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+                    
+                    if (hourEl) hourEl.textContent = hours.toString().padStart(2, '0');
+                    if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+                    if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+                    if (periodEl) periodEl.textContent = period;
+                } catch (error) {
+                    console.error('Error in updateClock:', error);
+                }
+            }
+
+            // Update clock every second
+            setInterval(updateClock, 1000);
+            updateClock(); // Initial call
+
+            // Blue card real-time clock functionality
+            function updateBlueCardClock() {
+                try {
+                    const now = new Date();
+                    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    
+                    // Get elements
+                    const dayElement = document.getElementById('current-day');
+                    const monthElement = document.getElementById('current-month');
+                    const dateElement = document.getElementById('current-date');
+                    const yearElement = document.getElementById('current-year');
+                    const timeElement = document.getElementById('current-time');
+                    
+                    // Check if elements exist
+                    if (dayElement && monthElement && dateElement && yearElement && timeElement) {
+                        const currentDay = days[now.getDay()];
+                        const currentMonth = months[now.getMonth()];
+                        const currentDate = now.getDate();
+                        const currentYear = now.getFullYear();
+                        const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                        
+                        dayElement.textContent = currentDay;
+                        monthElement.textContent = currentMonth;
+                        dateElement.textContent = currentDate;
+                        yearElement.textContent = currentYear;
+                        timeElement.textContent = currentTime;
+                        
+                        // Debug log to show current date
+                        console.log(`Current date: ${currentDay}, ${currentMonth} ${currentDate}, ${currentYear}`);
+                        console.log(`Current time: ${currentTime}`);
+                    } else {
+                        console.log('Some clock elements not found');
+                    }
+                } catch (error) {
+                    console.error('Error updating blue card clock:', error);
+                }
+            }
+
+            // Update blue card clock every second
+            setInterval(updateBlueCardClock, 1000);
+            updateBlueCardClock(); // Initial call
+
+            // Real-time Carousel functionality
+            let currentRealTimeSlide = 0;
+            const realTimeSlides = document.querySelectorAll('.real-time-carousel .dam-slide');
+            const realTimeDots = document.querySelectorAll('.real-time-nav .nav-dot');
+            const prevRealTimeBtn = document.getElementById('prevBtnRealTime');
+            const nextRealTimeBtn = document.getElementById('nextBtnRealTime');
+
+            console.log('Real-time carousel elements found:', {
+                realTimeSlides: realTimeSlides.length,
+                realTimeDots: realTimeDots.length,
+                prevRealTimeBtn: !!prevRealTimeBtn,
+                nextRealTimeBtn: !!nextRealTimeBtn
+            });
+
+            function showRealTimeSlide(index) {
+                console.log('Showing real-time slide:', index);
+                
+                // Remove active class from all real-time slides and dots
+                realTimeSlides.forEach(slide => {
+                    slide.classList.remove('active', 'prev');
+                });
+                realTimeDots.forEach(dot => dot.classList.remove('active'));
+
+                // Add active class to current real-time slide and dot
+                if (realTimeSlides[index]) {
+                    realTimeSlides[index].classList.add('active');
+                }
+                if (realTimeDots[index]) {
+                    realTimeDots[index].classList.add('active');
+                }
+
+                // Add prev class to previous real-time slide for smooth transition
+                const prevIndex = index === 0 ? realTimeSlides.length - 1 : index - 1;
+                if (realTimeSlides[prevIndex]) {
+                    realTimeSlides[prevIndex].classList.add('prev');
+                }
+
+                currentRealTimeSlide = index;
+            }
+
+            function nextRealTimeSlide() {
+                const nextIndex = (currentRealTimeSlide + 1) % realTimeSlides.length;
+                showRealTimeSlide(nextIndex);
+            }
+
+            function prevRealTimeSlide() {
+                const prevIndex = currentRealTimeSlide === 0 ? realTimeSlides.length - 1 : currentRealTimeSlide - 1;
+                showRealTimeSlide(prevIndex);
+            }
+
+            // Event listeners for real-time navigation dots
+            realTimeDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    console.log('Real-time dot clicked:', index);
+                    showRealTimeSlide(index);
+                });
+            });
+
+            // Event listeners for real-time control buttons
+            if (prevRealTimeBtn) {
+                prevRealTimeBtn.addEventListener('click', () => {
+                    console.log('Real-time prev button clicked');
+                    prevRealTimeSlide();
+                });
+            }
+            if (nextRealTimeBtn) {
+                nextRealTimeBtn.addEventListener('click', () => {
+                    console.log('Real-time next button clicked');
+                    nextRealTimeSlide();
+                });
+            }
+
+            // Auto-advance real-time carousel every 10 seconds
+            setInterval(nextRealTimeSlide, 10000);
+
+            // Keyboard navigation for real-time carousel
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevRealTimeSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextRealTimeSlide();
+                }
+            });
+
+            // Initialize first real-time slide
+            showRealTimeSlide(0);
+
+            // Water Level Carousel functionality
+            let currentWaterLevelSlide = 0;
+            const waterLevelSlides = document.querySelectorAll('.water-level-carousel .dam-slide');
+            const waterLevelDots = document.querySelectorAll('.water-level-nav .nav-dot');
+            const prevWaterLevelBtn = document.getElementById('prevBtnWaterLevel');
+            const nextWaterLevelBtn = document.getElementById('nextBtnWaterLevel');
+
+            console.log('Water Level carousel elements found:', {
+                waterLevelSlides: waterLevelSlides.length,
+                waterLevelDots: waterLevelDots.length,
+                prevWaterLevelBtn: !!prevWaterLevelBtn,
+                nextWaterLevelBtn: !!nextWaterLevelBtn
+            });
+
+            function showWaterLevelSlide(index) {
+                console.log('Showing water level slide:', index);
+                
+                // Remove active class from all water level slides and dots
+                waterLevelSlides.forEach(slide => {
+                    slide.classList.remove('active', 'prev');
+                });
+                waterLevelDots.forEach(dot => dot.classList.remove('active'));
+
+                // Add active class to current water level slide and dot
+                if (waterLevelSlides[index]) {
+                    waterLevelSlides[index].classList.add('active');
+                }
+                if (waterLevelDots[index]) {
+                    waterLevelDots[index].classList.add('active');
+                }
+
+                // Add prev class to previous water level slide for smooth transition
+                const prevIndex = index === 0 ? waterLevelSlides.length - 1 : index - 1;
+                if (waterLevelSlides[prevIndex]) {
+                    waterLevelSlides[prevIndex].classList.add('prev');
+                }
+
+                currentWaterLevelSlide = index;
+            }
+
+            function nextWaterLevelSlide() {
+                const nextIndex = (currentWaterLevelSlide + 1) % waterLevelSlides.length;
+                showWaterLevelSlide(nextIndex);
+            }
+
+            function prevWaterLevelSlide() {
+                const prevIndex = currentWaterLevelSlide === 0 ? waterLevelSlides.length - 1 : currentWaterLevelSlide - 1;
+                showWaterLevelSlide(prevIndex);
+            }
+
+            // Event listeners for water level navigation dots
+            waterLevelDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    console.log('Water level dot clicked:', index);
+                    showWaterLevelSlide(index);
+                });
+            });
+
+            // Event listeners for water level control buttons
+            if (prevWaterLevelBtn) {
+                prevWaterLevelBtn.addEventListener('click', () => {
+                    console.log('Water level prev button clicked');
+                    prevWaterLevelSlide();
+                });
+            }
+            if (nextWaterLevelBtn) {
+                nextWaterLevelBtn.addEventListener('click', () => {
+                    console.log('Water level next button clicked');
+                    nextWaterLevelSlide();
+                });
+            }
+
+            // Auto-advance water level carousel every 15 seconds
+            setInterval(nextWaterLevelSlide, 15000);
+
+            // Initialize first water level slide
+            showWaterLevelSlide(0);
+
+            // GIS Carousel functionality
+            let currentGisSlide = 0;
+            const gisSlides = document.querySelectorAll('.gis-carousel .dam-slide');
+            const gisDots = document.querySelectorAll('.gis-nav .nav-dot');
+            const prevGisBtn = document.getElementById('prevBtnGis');
+            const nextGisBtn = document.getElementById('nextBtnGis');
+
+            console.log('GIS carousel elements found:', {
+                gisSlides: gisSlides.length,
+                gisDots: gisDots.length,
+                prevGisBtn: !!prevGisBtn,
+                nextGisBtn: !!nextGisBtn
+            });
+
+            function showGisSlide(index) {
+                console.log('Showing GIS slide:', index);
+                
+                // Remove active class from all GIS slides and dots
+                gisSlides.forEach(slide => {
+                    slide.classList.remove('active', 'prev');
+                });
+                gisDots.forEach(dot => dot.classList.remove('active'));
+
+                // Add active class to current GIS slide and dot
+                if (gisSlides[index]) {
+                    gisSlides[index].classList.add('active');
+                }
+                if (gisDots[index]) {
+                    gisDots[index].classList.add('active');
+                }
+
+                // Add prev class to previous GIS slide for smooth transition
+                const prevIndex = index === 0 ? gisSlides.length - 1 : index - 1;
+                if (gisSlides[prevIndex]) {
+                    gisSlides[prevIndex].classList.add('prev');
+                }
+
+                currentGisSlide = index;
+            }
+
+            function nextGisSlide() {
+                const nextIndex = (currentGisSlide + 1) % gisSlides.length;
+                showGisSlide(nextIndex);
+            }
+
+            function prevGisSlide() {
+                const prevIndex = currentGisSlide === 0 ? gisSlides.length - 1 : currentGisSlide - 1;
+                showGisSlide(prevIndex);
+            }
+
+            // Event listeners for GIS navigation dots
+            gisDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    console.log('GIS dot clicked:', index);
+                    showGisSlide(index);
+                });
+            });
+
+            // Event listeners for GIS control buttons
+            if (prevGisBtn) {
+                prevGisBtn.addEventListener('click', () => {
+                    console.log('GIS prev button clicked');
+                    prevGisSlide();
+                });
+            }
+            if (nextGisBtn) {
+                nextGisBtn.addEventListener('click', () => {
+                    console.log('GIS next button clicked');
+                    nextGisSlide();
+                });
+            }
+
+            // Auto-advance GIS carousel every 18 seconds
+            setInterval(nextGisSlide, 18000);
+
+            // Initialize first GIS slide
+            showGisSlide(0);
+
+            // Dam card interactions
+            const damCards = document.querySelectorAll('.dam-card');
+            damCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    damCards.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    const damId = this.getAttribute('data-dam');
+                    const damName = this.querySelector('h4').textContent.split(' - ')[0];
+                    
+                    // Show notification
+                    showNotification('Dam Selected', `${damName} is now active`, 'info');
+                    
+                    // Update dam sidebar if it exists
+                    updateDamSidebar(damId, damName);
+                });
+            });
+
+            // Enhanced metric animations
+            function animateMetricValue(element, newValue, oldValue) {
+                if (!element) return;
+                
+                const startValue = parseInt(oldValue) || 0;
+                const endValue = parseInt(newValue) || 0;
+                const duration = 1000; // 1 second
+                const startTime = performance.now();
+                
+                function updateValue(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function for smooth animation
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutQuart);
+                    
+                    // Update the element with the appropriate unit
+                    const unit = element.textContent.match(/[a-zA-Z%°]+/)?.[0] || '';
+                    element.textContent = currentValue + unit;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(updateValue);
+                    }
+                }
+                
+                requestAnimationFrame(updateValue);
+            }
+
+            // Enhanced dam data updates with animations
+            function updateDamData() {
+                const dams = [
+                    { id: 1, name: 'Bujagali' },
+                    { id: 2, name: 'Karuma' },
+                    { id: 3, name: 'Isimba' }
+                ];
+
+                dams.forEach(dam => {
+                    // Simulate realistic data changes
+                    const waterLevel = Math.floor(Math.random() * 200) + 1100;
+                    const humidity = Math.floor(Math.random() * 20) + 70;
+                    const dispatch = Math.floor(Math.random() * 100) + 150;
+                    const temperature = Math.floor(Math.random() * 8) + 22;
+                    const discharge = Math.floor(Math.random() * 200) + 700;
+                    const precipitation = Math.floor(Math.random() * 10);
+
+                    // Get current values for animation
+                    const waterLevelEl = document.getElementById(`waterlevel-${dam.id}`);
+                    const humidityEl = document.getElementById(`humidity-${dam.id}`);
+                    const dispatchEl = document.getElementById(`dispatch-${dam.id}`);
+                    const temperatureEl = document.getElementById(`temperature-${dam.id}`);
+                    const dischargeEl = document.getElementById(`discharge-${dam.id}`);
+                    const precipitationEl = document.getElementById(`precipitation-${dam.id}`);
+
+                    // Animate value changes
+                    if (waterLevelEl) {
+                        const oldValue = waterLevelEl.textContent.replace('mm', '');
+                        animateMetricValue(waterLevelEl, waterLevel, oldValue);
+                    }
+                    if (humidityEl) {
+                        const oldValue = humidityEl.textContent.replace('%', '');
+                        animateMetricValue(humidityEl, humidity, oldValue);
+                    }
+                    if (dispatchEl) {
+                        const oldValue = dispatchEl.textContent.replace('MW', '');
+                        animateMetricValue(dispatchEl, dispatch, oldValue);
+                    }
+                    if (temperatureEl) {
+                        const oldValue = temperatureEl.textContent.replace('°C', '');
+                        animateMetricValue(temperatureEl, temperature, oldValue);
+                    }
+                    if (dischargeEl) {
+                        const oldValue = dischargeEl.textContent.replace('m³/s', '');
+                        animateMetricValue(dischargeEl, discharge, oldValue);
+                    }
+                    if (precipitationEl) {
+                        const oldValue = precipitationEl.textContent.replace('mm', '');
+                        animateMetricValue(precipitationEl, precipitation, oldValue);
+                    }
+                });
+            }
+
+            // Update dam data every 10 seconds
+            setInterval(updateDamData, 10000);
+
+            // Function to update dam sidebar (placeholder for future integration)
+            function updateDamSidebar(damId, damName) {
+                console.log(`Updating sidebar for ${damName} (ID: ${damId})`);
+                // This function can be expanded to update the dam sidebar with detailed information
+            }
+
+            // Add pulse effect to live indicator
+            function addPulseEffect() {
+                const liveIndicator = document.querySelector('.live-indicator');
+                if (liveIndicator) {
+                    liveIndicator.style.animation = 'pulse 2s infinite';
+                }
+            }
+
+            // Enhanced status indicators
+            function updateStatusIndicators() {
+                const statusIndicators = document.querySelectorAll('.status-indicator');
+                statusIndicators.forEach(indicator => {
+                    // Randomly change status for demonstration
+                    const statuses = ['online', 'warning', 'error'];
+                    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    // Only change occasionally (10% chance)
+                    if (Math.random() < 0.1) {
+                        indicator.className = `status-indicator ${randomStatus}`;
+                        
+                        const damCard = indicator.closest('.dam-card');
+                        const damName = damCard.querySelector('h4').textContent.split(' - ')[0];
+                        
+                        if (randomStatus === 'error') {
+                            showNotification(`${damName} - Critical Alert`, 'System error detected', 'error');
+                        } else if (randomStatus === 'warning') {
+                            showNotification(`${damName} - Warning`, 'System warning detected', 'warning');
+                        }
+                    }
+                });
+            }
+
+            // Initialize enhanced features
+            addPulseEffect();
+            
+            // Update status indicators every 30 seconds
+            setInterval(updateStatusIndicators, 30000);
+
+            // Chart placeholder interactions
+            const chartPlaceholders = document.querySelectorAll('.chart-placeholder');
+            chartPlaceholders.forEach(placeholder => {
+                placeholder.addEventListener('click', function() {
+                    const cardTitle = this.closest('.prediction-card').querySelector('h3').textContent;
+                    showNotification('Chart Interaction', `Opening detailed chart for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // GIS card interactions
+            const gisCards = document.querySelectorAll('.gis-card');
+            gisCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const cardTitle = this.querySelector('h3').textContent;
+                    showNotification('GIS Data', `Opening detailed GIS view for ${cardTitle}`, 'info');
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Dam selection prompt functionality
+            const damRequiredLinks = document.querySelectorAll('.dam-required-link');
+            damRequiredLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const page = this.getAttribute('data-page');
+                    const pageNames = {
+                        'realtime': 'Real-time Monitoring',
+                        'gis': 'GIS Monitoring', 
+                        'predictions': 'Predictions'
+                    };
+                    
+                    showNotification(
+                        `Please select a dam from the sidebar to access ${pageNames[page]} data.`, 
+                        'info'
+                    );
+                    
+                    // Optionally scroll to dam list to draw attention
+                    const damList = document.querySelector('.dam-list');
+                    if (damList) {
+                        damList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Add a subtle highlight effect to the dam list
+                        damList.style.transition = 'box-shadow 0.3s ease';
+                        damList.style.boxShadow = '0 0 20px rgba(8, 150, 252, 0.3)';
+                        setTimeout(() => {
+                            damList.style.boxShadow = '';
+                        }, 2000);
+                    }
+                });
+            });
+
+            // Initialize water level prediction charts
+            initializeWaterLevelCharts();
+
+            // Dam popup functionality
+            initializeDamPopup();
+
+            // Chat widget functionality
+            initializeChatWidget();
+
+            // Theme switching functionality
+        });
+
+        // Water Level Prediction Charts
+        function initializeWaterLevelCharts() {
+            // Generate dummy data for charts
+            const generateDummyData = (baseLevel, variation = 30) => {
+                const labels = [];
+                const realtimeData = [];
+                const predictionData = [];
+                
+                let currentLevel = baseLevel;
+                
+                // Generate 14 days of data (7 past + 7 future)
+                for (let i = -7; i <= 7; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() + i);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    
+                    if (i <= 0) {
+                        // Real-time data (past and current)
+                        currentLevel += (Math.random() - 0.5) * 10; // More gradual changes
+                        currentLevel = Math.max(baseLevel - variation/2, Math.min(baseLevel + variation/2, currentLevel));
+                        realtimeData.push(currentLevel);
+                        
+                        // Connect prediction to current level at i=0
+                        if (i === 0) {
+                            predictionData.push(currentLevel);
+                        } else {
+                            predictionData.push(null);
+                        }
+                    } else {
+                        // Prediction data (future) - continues from current level
+                        currentLevel += (Math.random() - 0.3) * 8 + i * 1.5; // Slight upward trend
+                        currentLevel = Math.max(baseLevel - variation/2, Math.min(baseLevel + variation/2, currentLevel));
+                        realtimeData.push(null);
+                        predictionData.push(currentLevel);
+                    }
+                }
+                
+                return { labels, realtimeData, predictionData };
+            };
+
+            // Chart configuration template
+            const createChartConfig = (data) => ({
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Real-time Data',
+                        data: data.realtimeData,
+                        borderColor: '#0896FC',
+                        backgroundColor: 'rgba(8, 150, 252, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: '#0896FC',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }, {
+                        label: 'Prediction Trend',
+                        data: data.predictionData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                },
+                                color: '#666666',
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#0896FC',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(1)}m`;
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                borderColor: 'rgba(0, 0, 0, 0.2)'
+                            },
+                            ticks: {
+                                color: '#666666',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                borderColor: 'rgba(0, 0, 0, 0.2)'
+                            },
+                            ticks: {
+                                color: '#666666',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(0) + 'm';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Water Level (m)',
+                                color: '#666666',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: false,
+                            grace: '5%' // Add 5% padding above and below data range
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Initialize charts for each dam
+            const dams = [
+                { id: 'bujagaliChart', baseLevel: 700 },
+                { id: 'kiiraChart', baseLevel: 720 },
+                { id: 'isimbaChart', baseLevel: 680 }
+            ];
+
+            dams.forEach(dam => {
+                const canvas = document.getElementById(dam.id);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    const data = generateDummyData(dam.baseLevel);
+                    const config = createChartConfig(data);
+                    
+                    new Chart(ctx, config);
+                }
+            });
+        }
+
+        // Dam Popup Functionality
+        function initializeDamPopup() {
+            const damsMobileLink = document.getElementById('damsMobileLink');
+            const damPopupModal = document.getElementById('damPopupModal');
+            const damPopupClose = document.getElementById('damPopupClose');
+            const damPopupOverlay = damPopupModal?.querySelector('.dam-popup-overlay');
+            
+            if (!damsMobileLink || !damPopupModal) return;
+            
+            // Open popup when Dams link is clicked
+            damsMobileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openDamPopup();
+            });
+            
+            // Close popup when close button is clicked
+            if (damPopupClose) {
+                damPopupClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup when overlay is clicked
+            if (damPopupOverlay) {
+                damPopupOverlay.addEventListener('click', function() {
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && damPopupModal.classList.contains('show')) {
+                    closeDamPopup();
+                }
+            });
+            
+            function openDamPopup() {
+                damPopupModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Close mobile navigation if open
+                const mobileNav = document.getElementById('mobileNav');
+                if (mobileNav && mobileNav.classList.contains('show')) {
+                    mobileNav.classList.remove('show');
+                }
+            }
+            
+            function closeDamPopup() {
+                damPopupModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Chat Widget Functionality
+        function initializeChatWidget() {
+            const chatToggle = document.getElementById('chatToggle');
+            const chatWindow = document.getElementById('chatWindow');
+            const chatClose = document.getElementById('chatClose');
+            const chatMinimize = document.getElementById('chatMinimize');
+            const chatMaximize = document.getElementById('chatMaximize');
+            const chatOverlay = document.getElementById('chatOverlay');
+            const channelsTab = document.getElementById('channelsTab');
+            const directTab = document.getElementById('directTab');
+            const channelsList = document.getElementById('channelsList');
+            const directList = document.getElementById('directList');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+            const chatMessages = document.getElementById('chatMessages');
+            const currentChatName = document.getElementById('currentChatName');
+            const currentChatDesc = document.getElementById('currentChatDesc');
+            
+            let isMinimized = false;
+            let currentChat = { type: 'channel', id: 'general' };
+            
+            // Sample chat data
+            const chatData = {
+                channels: {
+                    general: {
+                        name: 'general',
+                        description: 'General operational discussions',
+                        icon: 'fas fa-hashtag',
+                        messages: [
+                            {
+                                author: 'John Doe',
+                                role: 'Senior Engineer',
+                                avatar: 'JD',
+                                time: '10:30 AM',
+                                text: 'Good morning team! Water levels are looking stable across all dams today. 💧'
+                            },
+                            {
+                                author: 'Sarah Wilson',
+                                role: 'Dam Operator',
+                                avatar: 'SW',
+                                time: '10:32 AM',
+                                text: 'Thanks John! I\'m seeing some minor fluctuations at Bujagali, but nothing concerning yet.'
+                            },
+                            {
+                                author: 'Lisa Chen',
+                                role: 'Data Analyst',
+                                avatar: 'LC',
+                                time: '10:35 AM',
+                                text: 'AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?'
+                            }
+                        ]
+                    },
+                    emergencies: {
+                        name: 'emergencies',
+                        description: 'Critical alerts and emergency coordination',
+                        icon: 'fas fa-exclamation-triangle',
+                        messages: []
+                    },
+                    maintenance: {
+                        name: 'maintenance',
+                        description: 'Maintenance scheduling and coordination',
+                        icon: 'fas fa-wrench',
+                        messages: []
+                    },
+                    predictions: {
+                        name: 'predictions',
+                        description: 'AI/ML predictions and forecasting discussions',
+                        icon: 'fas fa-chart-line',
+                        messages: [
+                            {
+                                author: 'Lisa Chen',
+                                role: 'Data Analyst',
+                                avatar: 'LC',
+                                time: '09:15 AM',
+                                text: 'Latest ML model shows 92% accuracy for 24-hour water level predictions. Looking very promising!'
+                            }
+                        ]
+                    }
+                },
+                direct: {
+                    'john-doe': {
+                        name: 'John Doe',
+                        role: 'Senior Engineer',
+                        avatar: 'JD',
+                        status: 'online',
+                        messages: [
+                            {
+                                author: 'John Doe',
+                                role: 'Senior Engineer',
+                                avatar: 'JD',
+                                time: '11:20 AM',
+                                text: 'Hey! Can you review the latest discharge calculations when you have a moment?'
+                            }
+                        ]
+                    },
+                    'sarah-wilson': {
+                        name: 'Sarah Wilson',
+                        role: 'Dam Operator',
+                        avatar: 'SW',
+                        status: 'away',
+                        messages: []
+                    }
+                }
+            };
+            
+            // Toggle chat window
+            chatToggle.addEventListener('click', function() {
+                if (chatWindow.classList.contains('show')) {
+                    chatWindow.classList.remove('show');
+                    chatOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                } else {
+                    chatWindow.classList.add('show');
+                    chatOverlay.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                    isMinimized = false;
+                    chatInput.focus();
+                }
+            });
+            
+            // Close chat
+            chatClose.addEventListener('click', function() {
+                chatWindow.classList.remove('show');
+                chatOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+            
+            // Minimize chat
+            chatMinimize.addEventListener('click', function() {
+                isMinimized = !isMinimized;
+                if (isMinimized) {
+                    chatWindow.style.height = '60px';
+                    chatMinimize.innerHTML = '<i class="fas fa-plus"></i>';
+                } else {
+                    // Restore to responsive height based on screen size
+                    if (isMaximized) {
+                        // If maximized, restore to maximized state
+                        const isMobile = window.innerWidth <= 768;
+                        const padding = isMobile ? '10px' : '20px';
+                        
+                        chatWindow.style.width = `calc(100vw - ${parseInt(padding) * 2}px)`;
+                        chatWindow.style.height = `calc(100vh - ${parseInt(padding) * 2}px)`;
+                        chatWindow.style.left = padding;
+                        chatWindow.style.top = padding;
+                    } else {
+                        // Restore to normal responsive size
+                        const screenWidth = window.innerWidth;
+                        if (screenWidth <= 900) {
+                            chatWindow.style.width = '300px';
+                            chatWindow.style.height = '400px';
+                        } else if (screenWidth <= 1024) {
+                            chatWindow.style.width = '320px';
+                            chatWindow.style.height = '450px';
+                        } else if (screenWidth <= 1200) {
+                            chatWindow.style.width = '350px';
+                            chatWindow.style.height = '500px';
+                        } else {
+                            chatWindow.style.width = '400px';
+                            chatWindow.style.height = '600px';
+                        }
+                    }
+                    chatMinimize.innerHTML = '<i class="fas fa-minus"></i>';
+                }
+            });
+
+            // Make chat window draggable
+            let isDragging = false;
+            let dragOffset = { x: 0, y: 0 };
+            const chatHeader = document.querySelector('.chat-header');
+
+            if (chatHeader) {
+                chatHeader.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('.chat-controls')) return; // Don't drag when clicking controls
+                    
+                    isDragging = true;
+                    const rect = chatWindow.getBoundingClientRect();
+                    dragOffset.x = e.clientX - rect.left;
+                    dragOffset.y = e.clientY - rect.top;
+                    
+                    chatWindow.style.cursor = 'grabbing';
+                    e.preventDefault();
+                });
+            }
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const newX = e.clientX - dragOffset.x;
+                const newY = e.clientY - dragOffset.y;
+                
+                // Constrain to viewport bounds
+                const maxX = window.innerWidth - chatWindow.offsetWidth;
+                const maxY = window.innerHeight - chatWindow.offsetHeight;
+                
+                chatWindow.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
+                chatWindow.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+                chatWindow.style.right = 'auto';
+                chatWindow.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    chatWindow.style.cursor = 'default';
+                }
+            });
+
+            // Maximize chat window
+            let isMaximized = false;
+            let originalPosition = {};
+
+            chatMaximize.addEventListener('click', function() {
+                if (!isMaximized) {
+                    // Store original position and size
+                    originalPosition = {
+                        left: chatWindow.style.left || 'auto',
+                        top: chatWindow.style.top || 'auto',
+                        right: chatWindow.style.right || '0px',
+                        bottom: chatWindow.style.bottom || '70px',
+                        width: chatWindow.style.width || '400px',
+                        height: chatWindow.style.height || '600px'
+                    };
+
+                    // Add maximized class for full-screen styling
+                    chatWindow.classList.add('maximized');
+                    
+                    chatMaximize.innerHTML = '<i class="fas fa-compress"></i>';
+                    chatMaximize.title = 'Restore';
+                    isMaximized = true;
+                    
+                    // Ensure chat content is visible and properly sized
+                    setTimeout(() => {
+                        const chatMessages = document.querySelector('.chat-messages');
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }, 100);
+                    
+                } else {
+                    // Restore original position and size
+                    chatWindow.style.left = originalPosition.left;
+                    chatWindow.style.top = originalPosition.top;
+                    chatWindow.style.right = originalPosition.right;
+                    chatWindow.style.bottom = originalPosition.bottom;
+                    chatWindow.style.width = originalPosition.width;
+                    chatWindow.style.height = originalPosition.height;
+                    chatWindow.style.zIndex = '1000';
+                    chatWindow.style.borderRadius = '12px';
+                    
+                    // Remove maximized class
+                    chatWindow.classList.remove('maximized');
+                    
+                    chatMaximize.innerHTML = '<i class="fas fa-expand"></i>';
+                    chatMaximize.title = 'Maximize';
+                    isMaximized = false;
+                }
+            });
+
+            // Close chat when clicking overlay
+            chatOverlay.addEventListener('click', function() {
+                chatWindow.classList.remove('show');
+                chatOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+
+            // Handle window resize for responsive chat
+            window.addEventListener('resize', function() {
+                if (chatWindow.classList.contains('show') && !isMinimized) {
+                    if (isMaximized) {
+                        // Maximized state is handled by CSS, no need to adjust inline styles
+                        // The CSS class will automatically handle the full-screen sizing
+                    } else {
+                        // Adjust normal chat window size based on new screen size
+                        const screenWidth = window.innerWidth;
+                        if (screenWidth <= 900) {
+                            chatWindow.style.width = '300px';
+                            chatWindow.style.height = '400px';
+                        } else if (screenWidth <= 1024) {
+                            chatWindow.style.width = '320px';
+                            chatWindow.style.height = '450px';
+                        } else if (screenWidth <= 1200) {
+                            chatWindow.style.width = '350px';
+                            chatWindow.style.height = '500px';
+                        } else {
+                            chatWindow.style.width = '400px';
+                            chatWindow.style.height = '600px';
+                        }
+                    }
+                }
+            });
+
+            // Close chat on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && chatWindow.classList.contains('show')) {
+                    chatWindow.classList.remove('show');
+                    chatOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Function to ensure chat content is properly displayed
+            function ensureChatContentVisibility() {
+                const chatMessages = document.querySelector('.chat-messages');
+                const chatSidebar = document.querySelector('.chat-sidebar');
+                const chatContent = document.querySelector('.chat-content');
+                
+                if (chatMessages) {
+                    chatMessages.style.display = 'flex';
+                    chatMessages.style.flexDirection = 'column';
+                    chatMessages.style.flex = '1';
+                }
+                
+                if (chatSidebar) {
+                    chatSidebar.style.display = 'flex';
+                    chatSidebar.style.flexDirection = 'column';
+                }
+                
+                if (chatContent) {
+                    chatContent.style.display = 'flex';
+                    chatContent.style.flexDirection = 'column';
+                    chatContent.style.flex = '1';
+                }
+            }
+
+            // Call this function when chat is opened
+            chatToggle.addEventListener('click', function() {
+                if (!chatWindow.classList.contains('show')) {
+                    setTimeout(ensureChatContentVisibility, 100);
+                }
+            });
+            
+            // Tab switching
+            channelsTab.addEventListener('click', function() {
+                channelsTab.classList.add('active');
+                directTab.classList.remove('active');
+                channelsList.classList.add('active');
+                directList.classList.remove('active');
+            });
+            
+            directTab.addEventListener('click', function() {
+                directTab.classList.add('active');
+                channelsTab.classList.remove('active');
+                directList.classList.add('active');
+                channelsList.classList.remove('active');
+            });
+            
+            // Chat item selection
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active from all items
+                    document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
+                    
+                    // Add active to clicked item
+                    this.classList.add('active');
+                    
+                    // Remove unread count
+                    const unreadCount = this.querySelector('.unread-count');
+                    if (unreadCount) {
+                        unreadCount.remove();
+                        updateChatBadge();
+                    }
+                    
+                    // Update current chat
+                    currentChat.type = this.dataset.type;
+                    currentChat.id = this.dataset.id;
+                    
+                    // Load chat messages
+                    loadChatMessages();
+                });
+            });
+            
+            // Send message
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                const newMessage = {
+                    author: 'You',
+                    role: 'System Administrator',
+                    avatar: 'YO',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    text: message
+                };
+                
+                // Add to chat data
+                if (currentChat.type === 'channel') {
+                    chatData.channels[currentChat.id].messages.push(newMessage);
+                } else {
+                    chatData.direct[currentChat.id].messages.push(newMessage);
+                }
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Reload messages
+                loadChatMessages();
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Send button click
+            chatSend.addEventListener('click', sendMessage);
+            
+            // Enter key to send
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Load chat messages
+            function loadChatMessages() {
+                let chatInfo, messages;
+                
+                if (currentChat.type === 'channel') {
+                    chatInfo = chatData.channels[currentChat.id];
+                    currentChatName.innerHTML = `<i class="${chatInfo.icon}"></i> ${chatInfo.name}`;
+                    currentChatDesc.textContent = chatInfo.description;
+                    messages = chatInfo.messages;
+                } else {
+                    chatInfo = chatData.direct[currentChat.id];
+                    currentChatName.innerHTML = `<i class="fas fa-user"></i> ${chatInfo.name}`;
+                    currentChatDesc.textContent = chatInfo.role;
+                    messages = chatInfo.messages;
+                }
+                
+                // Clear current messages (keep header)
+                const headerInfo = chatMessages.querySelector('.chat-header-info');
+                chatMessages.innerHTML = '';
+                chatMessages.appendChild(headerInfo);
+                
+                // Add messages
+                messages.forEach(msg => {
+                    const messageGroup = document.createElement('div');
+                    messageGroup.className = 'message-group';
+                    
+                    messageGroup.innerHTML = `
+                        <div class="message-avatar">${msg.avatar}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">${msg.author}</span>
+                                <span class="message-role">${msg.role}</span>
+                                <span class="message-time">${msg.time}</span>
+                            </div>
+                            <div class="message-text">${msg.text}</div>
+                        </div>
+                    `;
+                    
+                    chatMessages.appendChild(messageGroup);
+                });
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            }
+            
+            // Update chat badge count
+            function updateChatBadge() {
+                let unreadCount = 0;
+                document.querySelectorAll('.unread-count').forEach(badge => {
+                    unreadCount += parseInt(badge.textContent) || 0;
+                });
+                
+                const chatBadge = document.getElementById('chatBadge');
+                if (unreadCount > 0) {
+                    chatBadge.textContent = unreadCount;
+                    chatBadge.style.display = 'flex';
+                } else {
+                    chatBadge.style.display = 'none';
+                }
+            }
+            
+            // Initialize
+            updateChatBadge();
+            loadChatMessages();
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#0896FC' : '#10b981'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+                z-index: 1001;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Example usage
+        // showNotification('Welcome to Hydro-M!', 'success');
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="uegcl-logo.png" alt="UEGCL Logo">
+            </div>
+            <div class="footer-text">
+                <p>2023 Hydro-M, All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Overlay Background -->
+    <div id="chatOverlay" class="chat-overlay"></div>
+    
+    <!-- Floating Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <div id="chatToggle" class="chat-toggle">
+            <span class="chat-text">Chat</span>
+            <i class="fas fa-chevron-up chat-arrow"></i>
+            <span class="chat-badge" id="chatBadge">3</span>
+        </div>
+        
+        <!-- Chat Window -->
+        <div id="chatWindow" class="chat-window">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fas fa-comments"></i>
+                    <span>Hydro-M Chat</span>
+                </div>
+                <div class="chat-controls">
+                    <button id="chatMaximize" class="chat-btn" title="Maximize">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="chatMinimize" class="chat-btn" title="Minimize">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button id="chatClose" class="chat-btn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Navigation -->
+            <div class="chat-nav">
+                <button id="channelsTab" class="chat-nav-btn active">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Channels</span>
+                </button>
+                <button id="directTab" class="chat-nav-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Direct Messages</span>
+                </button>
+            </div>
+            
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <!-- Channels List -->
+                <div id="channelsList" class="chat-list active">
+                    <div class="chat-list-header">
+                        <span>Channels</span>
+                        <button class="chat-add-btn" id="addChannel">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item active" data-type="channel" data-id="general">
+                            <i class="fas fa-hashtag"></i>
+                            <span>general</span>
+                            <span class="unread-count">2</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="emergencies">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>emergencies</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="maintenance">
+                            <i class="fas fa-wrench"></i>
+                            <span>maintenance</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="predictions">
+                            <i class="fas fa-chart-line"></i>
+                            <span>predictions</span>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-bujagali">
+                            <i class="fas fa-water"></i>
+                            <span>dam-bujagali</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-kiira">
+                            <i class="fas fa-water"></i>
+                            <span>dam-kiira</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Direct Messages List -->
+                <div id="directList" class="chat-list">
+                    <div class="chat-list-header">
+                        <span>Direct Messages</span>
+                        <button class="chat-add-btn" id="addDirect">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item" data-type="direct" data-id="john-doe">
+                            <div class="user-avatar online">JD</div>
+                            <div class="user-info">
+                                <span class="user-name">John Doe</span>
+                                <span class="user-role">Senior Engineer</span>
+                            </div>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="sarah-wilson">
+                            <div class="user-avatar away">SW</div>
+                            <div class="user-info">
+                                <span class="user-name">Sarah Wilson</span>
+                                <span class="user-role">Dam Operator</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="mike-johnson">
+                            <div class="user-avatar offline">MJ</div>
+                            <div class="user-info">
+                                <span class="user-name">Mike Johnson</span>
+                                <span class="user-role">Maintenance Chief</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="lisa-chen">
+                            <div class="user-avatar online">LC</div>
+                            <div class="user-info">
+                                <span class="user-name">Lisa Chen</span>
+                                <span class="user-role">Data Analyst</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Content -->
+            <div class="chat-content">
+                <!-- Chat Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-header-info">
+                        <div class="chat-channel-info">
+                            <i class="fas fa-hashtag"></i>
+                            <div>
+                                <h4 id="currentChatName">general</h4>
+                                <p id="currentChatDesc">General operational discussions</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Messages -->
+                    <div class="message-group">
+                        <div class="message-avatar">JD</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">John Doe</span>
+                                <span class="message-role">Senior Engineer</span>
+                                <span class="message-time">10:30 AM</span>
+                            </div>
+                            <div class="message-text">Good morning team! Water levels are looking stable across all dams today. 💧</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">SW</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Sarah Wilson</span>
+                                <span class="message-role">Dam Operator</span>
+                                <span class="message-time">10:32 AM</span>
+                            </div>
+                            <div class="message-text">Thanks John! I'm seeing some minor fluctuations at Bujagali, but nothing concerning yet.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">LC</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Lisa Chen</span>
+                                <span class="message-role">Data Analyst</span>
+                                <span class="message-time">10:35 AM</span>
+                            </div>
+                            <div class="message-text">AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <button class="chat-attachment-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+                        <button class="chat-emoji-btn">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <button id="chatSend" class="chat-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
