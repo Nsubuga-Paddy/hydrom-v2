@@ -1583,6 +1583,165 @@
                 font-size: 0.7rem;
             }
         }
+        /* Dam Popup Modal Styles */
+        .dam-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .dam-popup-modal.show {
+            display: flex;
+        }
+
+        .dam-popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .dam-popup-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: modalSlideUp 0.3s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dam-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-popup-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-close {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .dam-popup-body {
+            padding: 1rem 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .dam-popup-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dam-popup-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-item:hover {
+            background: #f8fafc;
+        }
+
+        .dam-popup-item:last-child {
+            border-bottom: none;
+        }
+
+        .dam-popup-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .dam-popup-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .dam-popup-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-popup-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-info p {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-arrow {
+            color: #9ca3af;
+            margin-left: 1rem;
+        }
+
+        .dam-popup-item:hover .dam-popup-arrow {
+            color: #0896FC;
+            transform: translateX(2px);
+        }
+
     </style>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1700,6 +1859,9 @@
                 <a href="./system-alarms.html" class="mobile-nav-link active">System Alarms</a>
             </li>
             <li class="mobile-nav-item">
+                <a href="#" class="mobile-nav-link" id="damsMobileLink">Dams</a>
+            </li>
+            <li class="mobile-nav-item">
                 <a href="./about-us.html" class="mobile-nav-link">About Us</a>
             </li>
             <li class="mobile-nav-item">
@@ -1712,6 +1874,56 @@
                 <a href="./help.html" class="mobile-nav-link">Help</a>
             </li>
         </ul>
+    </div>
+
+    <!-- Dam Selection Popup Modal -->
+    <div id="damPopupModal" class="dam-popup-modal">
+        <div class="dam-popup-content">
+            <div class="dam-popup-header">
+                <h3>Select a Dam</h3>
+                <button class="dam-popup-close" id="damPopupClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="dam-popup-body">
+                <div class="dam-popup-list">
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Lake Nalubaale</h4>
+                            <p>Jinja Pier - Real-time Monitoring</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Isimba HPP</h4>
+                            <p>Hydroelectric Power Plant</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="dam-popup-overlay"></div>
     </div>
 
     <!-- Main Content Area -->
@@ -2143,6 +2355,8 @@
     <script>
         // Navigation JavaScript
         document.addEventListener('DOMContentLoaded', function() {
+            // Dam popup functionality
+            initializeDamPopup();
             // Mobile menu toggle
             const menuToggle = document.getElementById('menuToggle');
             const mobileNav = document.getElementById('mobileNav');
@@ -2255,6 +2469,10 @@
 
             // Real-time clock functionality
             function updateClock() {
+                // Check if clock elements exist (only on dashboard)
+                const dayname = document.getElementById('dayname');
+                if (!dayname) return; // Exit if clock elements don't exist
+                
                 const now = new Date();
                 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2773,6 +2991,60 @@
                 });
             }
         });
+        // Dam Popup Functionality
+        function initializeDamPopup() {
+            const damsMobileLink = document.getElementById('damsMobileLink');
+            const damPopupModal = document.getElementById('damPopupModal');
+            const damPopupClose = document.getElementById('damPopupClose');
+            const damPopupOverlay = damPopupModal?.querySelector('.dam-popup-overlay');
+            
+            if (!damsMobileLink || !damPopupModal) return;
+            
+            // Open popup when Dams link is clicked
+            damsMobileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openDamPopup();
+            });
+            
+            // Close popup when close button is clicked
+            if (damPopupClose) {
+                damPopupClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup when overlay is clicked
+            if (damPopupOverlay) {
+                damPopupOverlay.addEventListener('click', function() {
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && damPopupModal.classList.contains('show')) {
+                    closeDamPopup();
+                }
+            });
+            
+            function openDamPopup() {
+                damPopupModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Close mobile navigation if open
+                const mobileNav = document.getElementById('mobileNav');
+                if (mobileNav && mobileNav.classList.contains('show')) {
+                    mobileNav.classList.remove('show');
+                }
+            }
+            
+            function closeDamPopup() {
+                damPopupModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
     </script>
 
     <!-- Footer -->

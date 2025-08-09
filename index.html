@@ -1940,44 +1940,11 @@
                 height: auto !important;
             }
 
-            /* Chart legend styles */
-            .chart-legend {
-                display: flex;
-                justify-content: center;
-                gap: 2rem;
-                margin-top: 0.5rem;
-                flex-wrap: wrap;
-            }
-
-            .legend-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 0.875rem;
-                color: #666;
-            }
-
-            .legend-color {
-                width: 12px;
-                height: 12px;
-                border-radius: 2px;
-                display: inline-block;
-            }
-
             /* Responsive chart adjustments */
             @media (max-width: 768px) {
                 .chart-container {
                     height: 200px;
                     padding: 0.75rem;
-                }
-                
-                .chart-legend {
-                    gap: 1rem;
-                    margin-top: 0.75rem;
-                }
-                
-                .legend-item {
-                    font-size: 0.75rem;
                 }
             }
 
@@ -1986,11 +1953,6 @@
                     height: 180px;
                     padding: 0.5rem;
                 }
-                
-                .chart-legend {
-                    gap: 0.75rem;
-                    justify-content: space-around;
-                }
             }
 
             /* White line mobile optimization */
@@ -1998,6 +1960,165 @@
                 width: 60%;
                 margin-bottom: 1rem;
             }
+        }
+
+        /* Dam Popup Modal Styles */
+        .dam-popup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .dam-popup-modal.show {
+            display: flex;
+        }
+
+        .dam-popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .dam-popup-content {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: modalSlideUp 0.3s ease-out;
+            z-index: 1;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dam-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dam-popup-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-close {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .dam-popup-body {
+            padding: 1rem 0;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .dam-popup-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dam-popup-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+        }
+
+        .dam-popup-item:hover {
+            background: #f8fafc;
+        }
+
+        .dam-popup-item:last-child {
+            border-bottom: none;
+        }
+
+        .dam-popup-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .dam-popup-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .dam-popup-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dam-popup-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .dam-popup-info p {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .dam-popup-arrow {
+            color: #9ca3af;
+            margin-left: 1rem;
+        }
+
+        .dam-popup-item:hover .dam-popup-arrow {
+            color: #0896FC;
+            transform: translateX(2px);
         }
 
         /* Extra small mobile devices */
@@ -2087,6 +2208,773 @@
                 margin-bottom: 0.75rem;
             }
         }
+        /* Chat Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Chat Overlay Background */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chat-overlay.show {
+            opacity: 1;
+            visibility: visible;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Chat Toggle Button - LinkedIn Style */
+        .chat-toggle {
+            width: auto;
+            min-width: 120px;
+            height: 56px;
+            background: #0896FC;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(8, 150, 252, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            border: none;
+            padding: 0 20px;
+            gap: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-toggle:hover {
+            background: #0678d1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(8, 150, 252, 0.4);
+        }
+
+        .chat-toggle .chat-text {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .chat-toggle .chat-arrow {
+            color: white;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .chat-toggle:hover .chat-arrow {
+            transform: translateY(-2px);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Maximized chat window - positioned fixed to cover full screen */
+        .chat-window.maximized {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+            z-index: 1001 !important;
+        }
+
+        /* Enhanced chat window when overlay is active */
+        .chat-overlay.show + .chat-widget .chat-window.show {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        /* Desktop Responsive Design for Chat */
+        @media (max-width: 1200px) {
+            .chat-window {
+                width: 350px;
+                height: 500px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .chat-window {
+                width: 320px;
+                height: 450px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .chat-window {
+                width: 300px;
+                height: 400px;
+                right: 0;
+                bottom: 70px;
+            }
+        }
+
+        /* Responsive Design for Chat */
+        @media (max-width: 768px) {
+            .chat-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .chat-toggle {
+                min-width: 100px;
+                height: 48px;
+                padding: 0 16px;
+                font-size: 13px;
+            }
+            
+            .chat-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+                right: -20px;
+                bottom: 60px;
+            }
+        }
+
+        /* Enhanced Chat Window Features */
+        .chat-window {
+            resize: both;
+            min-width: 280px;
+            min-height: 350px;
+            max-width: 90vw;
+            max-height: 80vh;
+            transition: all 0.3s ease;
+        }
+
+        .chat-window:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chat window when maximized */
+        .chat-window.maximized {
+            border-radius: 8px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-window.maximized .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-window.maximized .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .chat-window.maximized .chat-sidebar {
+            min-width: 280px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        /* Mobile optimizations for maximized chat */
+        @media (max-width: 768px) {
+            .chat-window.maximized {
+                border-radius: 4px;
+            }
+            
+            .chat-window.maximized .chat-sidebar {
+                min-width: 200px;
+            }
+            
+            .chat-window.maximized .chat-content {
+                min-width: 0;
+            }
+        }
+
+        /* Ensure chat content is scrollable */
+        .chat-messages {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Better spacing for small screens */
+        @media (max-width: 1200px) {
+            .chat-window {
+                font-size: 14px;
+            }
+            
+            .chat-header {
+                padding: 0.75rem;
+            }
+            
+            .chat-nav {
+                padding: 0.5rem;
+            }
+        }
+
+        .chat-window.show {
+            display: flex;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: #0896FC;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .chat-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .chat-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Chat Navigation */
+        .chat-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .chat-nav-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .chat-nav-btn:hover {
+            background: #f1f5f9;
+            color: #374151;
+        }
+
+        .chat-nav-btn.active {
+            color: #0896FC;
+            background: white;
+            border-bottom-color: #0896FC;
+        }
+
+        /* Chat Content Layout */
+        .chat-window > div:not(.chat-header):not(.chat-nav) {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Chat Sidebar */
+        .chat-sidebar {
+            width: 200px;
+            background: #f8fafc;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+        }
+
+        .chat-list {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-list.active {
+            display: flex;
+        }
+
+        .chat-list-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .chat-add-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .chat-add-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .chat-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            gap: 0.75rem;
+        }
+
+        .chat-item:hover {
+            background: #f1f5f9;
+        }
+
+        .chat-item.active {
+            background: #0896FC;
+            color: white;
+        }
+
+        .chat-item.active .unread-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .chat-item i {
+            color: #6b7280;
+            font-size: 0.875rem;
+            width: 16px;
+        }
+
+        .chat-item.active i {
+            color: white;
+        }
+
+        .chat-item span:not(.unread-count) {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .unread-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #0896FC;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-avatar.online::after {
+            background: #10b981;
+        }
+
+        .user-avatar.away::after {
+            background: #f59e0b;
+        }
+
+        .user-avatar.offline::after {
+            background: #6b7280;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item.active .user-name,
+        .chat-item.active .user-role {
+            color: white;
+        }
+
+        /* Chat Content */
+        .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Chat Header Info */
+        .chat-header-info {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-channel-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chat-channel-info i {
+            color: #0896FC;
+            font-size: 1.25rem;
+        }
+
+        .chat-channel-info h4 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .chat-channel-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Message Groups */
+        .message-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0896FC;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        .message-role {
+            color: #6b7280;
+            font-size: 0.75rem;
+            background: #f3f4f6;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        .message-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .message-text {
+            color: #374151;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+            background: white;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: #0896FC;
+            box-shadow: 0 0 0 3px rgba(8, 150, 252, 0.1);
+        }
+
+        .chat-attachment-btn,
+        .chat-emoji-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-attachment-btn:hover,
+        .chat-emoji-btn:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .chat-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .chat-send-btn {
+            background: #0896FC;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .chat-send-btn:hover {
+            background: #0678d1;
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chat-window {
+                width: 350px;
+                height: 500px;
+            }
+
+            .chat-sidebar {
+                width: 160px;
+            }
+
+            .chat-item {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .chat-messages {
+                padding: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: 320px;
+                height: 450px;
+                bottom: 70px;
+                right: -10px;
+            }
+
+            .chat-sidebar {
+                width: 140px;
+            }
+
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.75rem;
+            }
+
+            .chat-input-wrapper {
+                padding: 0.375rem;
+            }
+
+            .chat-send-btn {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
     </style>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -2204,6 +3092,9 @@
                 <a href="./system-alarms.html" class="mobile-nav-link">System Alarms</a>
             </li>
             <li class="mobile-nav-item">
+                <a href="#" class="mobile-nav-link" id="damsMobileLink">Dams</a>
+            </li>
+            <li class="mobile-nav-item">
                 <a href="./about-us.html" class="mobile-nav-link">About Us</a>
             </li>
             <li class="mobile-nav-item">
@@ -2216,6 +3107,56 @@
                 <a href="./help.html" class="mobile-nav-link">Help</a>
             </li>
         </ul>
+    </div>
+
+    <!-- Dam Selection Popup Modal -->
+    <div id="damPopupModal" class="dam-popup-modal">
+        <div class="dam-popup-content">
+            <div class="dam-popup-header">
+                <h3>Select a Dam</h3>
+                <button class="dam-popup-close" id="damPopupClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="dam-popup-body">
+                <div class="dam-popup-list">
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Lake Nalubaale</h4>
+                            <p>Jinja Pier - Real-time Monitoring</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="./realtime.html" class="dam-popup-item">
+                        <div class="dam-popup-icon">
+                            <img src="dam.png" alt="Dam Icon">
+                        </div>
+                        <div class="dam-popup-info">
+                            <h4>Isimba HPP</h4>
+                            <p>Hydroelectric Power Plant</p>
+                            <div class="dam-popup-status">
+                                <span class="status-indicator active"></span>
+                                <span>Operational</span>
+                            </div>
+                        </div>
+                        <div class="dam-popup-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="dam-popup-overlay"></div>
     </div>
 
     <!-- Main Content Area -->
@@ -2393,16 +3334,6 @@
                                 <div class="chart-container">
                                     <canvas id="bujagaliChart" width="400" height="250"></canvas>
                                 </div>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #0896FC;"></span>
-                                        <span>Real-time Data</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #10b981;"></span>
-                                        <span>Prediction Trend</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -2413,16 +3344,6 @@
                                 <div class="chart-container">
                                     <canvas id="kiiraChart" width="400" height="250"></canvas>
                                 </div>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #0896FC;"></span>
-                                        <span>Real-time Data</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #10b981;"></span>
-                                        <span>Prediction Trend</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -2432,16 +3353,6 @@
                             <div class="dam-metrics-graph">
                                 <div class="chart-container">
                                     <canvas id="isimbaChart" width="400" height="250"></canvas>
-                                </div>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #0896FC;"></span>
-                                        <span>Real-time Data</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <span class="legend-color" style="background: #10b981;"></span>
-                                        <span>Prediction Trend</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3327,6 +4238,12 @@
             // Initialize water level prediction charts
             initializeWaterLevelCharts();
 
+            // Dam popup functionality
+            initializeDamPopup();
+
+            // Chat widget functionality
+            initializeChatWidget();
+
             // Theme switching functionality
         });
 
@@ -3338,6 +4255,8 @@
                 const realtimeData = [];
                 const predictionData = [];
                 
+                let currentLevel = baseLevel;
+                
                 // Generate 14 days of data (7 past + 7 future)
                 for (let i = -7; i <= 7; i++) {
                     const date = new Date();
@@ -3346,12 +4265,22 @@
                     
                     if (i <= 0) {
                         // Real-time data (past and current)
-                        realtimeData.push(baseLevel + Math.random() * variation - variation/2);
-                        predictionData.push(null);
+                        currentLevel += (Math.random() - 0.5) * 10; // More gradual changes
+                        currentLevel = Math.max(baseLevel - variation/2, Math.min(baseLevel + variation/2, currentLevel));
+                        realtimeData.push(currentLevel);
+                        
+                        // Connect prediction to current level at i=0
+                        if (i === 0) {
+                            predictionData.push(currentLevel);
+                        } else {
+                            predictionData.push(null);
+                        }
                     } else {
-                        // Prediction data (future)
+                        // Prediction data (future) - continues from current level
+                        currentLevel += (Math.random() - 0.3) * 8 + i * 1.5; // Slight upward trend
+                        currentLevel = Math.max(baseLevel - variation/2, Math.min(baseLevel + variation/2, currentLevel));
                         realtimeData.push(null);
-                        predictionData.push(baseLevel + Math.random() * variation - variation/2 + i * 2);
+                        predictionData.push(currentLevel);
                     }
                 }
                 
@@ -3395,7 +4324,18 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false // We'll use custom legend
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                },
+                                color: '#666666',
+                                usePointStyle: true
+                            }
                         },
                         tooltip: {
                             mode: 'index',
@@ -3450,7 +4390,9 @@
                                     size: 12,
                                     weight: 'bold'
                                 }
-                            }
+                            },
+                            beginAtZero: false,
+                            grace: '5%' // Add 5% padding above and below data range
                         }
                     },
                     interaction: {
@@ -3478,6 +4420,539 @@
                     new Chart(ctx, config);
                 }
             });
+        }
+
+        // Dam Popup Functionality
+        function initializeDamPopup() {
+            const damsMobileLink = document.getElementById('damsMobileLink');
+            const damPopupModal = document.getElementById('damPopupModal');
+            const damPopupClose = document.getElementById('damPopupClose');
+            const damPopupOverlay = damPopupModal?.querySelector('.dam-popup-overlay');
+            
+            if (!damsMobileLink || !damPopupModal) return;
+            
+            // Open popup when Dams link is clicked
+            damsMobileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                openDamPopup();
+            });
+            
+            // Close popup when close button is clicked
+            if (damPopupClose) {
+                damPopupClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup when overlay is clicked
+            if (damPopupOverlay) {
+                damPopupOverlay.addEventListener('click', function() {
+                    closeDamPopup();
+                });
+            }
+            
+            // Close popup on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && damPopupModal.classList.contains('show')) {
+                    closeDamPopup();
+                }
+            });
+            
+            function openDamPopup() {
+                damPopupModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                
+                // Close mobile navigation if open
+                const mobileNav = document.getElementById('mobileNav');
+                if (mobileNav && mobileNav.classList.contains('show')) {
+                    mobileNav.classList.remove('show');
+                }
+            }
+            
+            function closeDamPopup() {
+                damPopupModal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Chat Widget Functionality
+        function initializeChatWidget() {
+            const chatToggle = document.getElementById('chatToggle');
+            const chatWindow = document.getElementById('chatWindow');
+            const chatClose = document.getElementById('chatClose');
+            const chatMinimize = document.getElementById('chatMinimize');
+            const chatMaximize = document.getElementById('chatMaximize');
+            const chatOverlay = document.getElementById('chatOverlay');
+            const channelsTab = document.getElementById('channelsTab');
+            const directTab = document.getElementById('directTab');
+            const channelsList = document.getElementById('channelsList');
+            const directList = document.getElementById('directList');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+            const chatMessages = document.getElementById('chatMessages');
+            const currentChatName = document.getElementById('currentChatName');
+            const currentChatDesc = document.getElementById('currentChatDesc');
+            
+            let isMinimized = false;
+            let currentChat = { type: 'channel', id: 'general' };
+            
+            // Sample chat data
+            const chatData = {
+                channels: {
+                    general: {
+                        name: 'general',
+                        description: 'General operational discussions',
+                        icon: 'fas fa-hashtag',
+                        messages: [
+                            {
+                                author: 'John Doe',
+                                role: 'Senior Engineer',
+                                avatar: 'JD',
+                                time: '10:30 AM',
+                                text: 'Good morning team! Water levels are looking stable across all dams today. 💧'
+                            },
+                            {
+                                author: 'Sarah Wilson',
+                                role: 'Dam Operator',
+                                avatar: 'SW',
+                                time: '10:32 AM',
+                                text: 'Thanks John! I\'m seeing some minor fluctuations at Bujagali, but nothing concerning yet.'
+                            },
+                            {
+                                author: 'Lisa Chen',
+                                role: 'Data Analyst',
+                                avatar: 'LC',
+                                time: '10:35 AM',
+                                text: 'AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?'
+                            }
+                        ]
+                    },
+                    emergencies: {
+                        name: 'emergencies',
+                        description: 'Critical alerts and emergency coordination',
+                        icon: 'fas fa-exclamation-triangle',
+                        messages: []
+                    },
+                    maintenance: {
+                        name: 'maintenance',
+                        description: 'Maintenance scheduling and coordination',
+                        icon: 'fas fa-wrench',
+                        messages: []
+                    },
+                    predictions: {
+                        name: 'predictions',
+                        description: 'AI/ML predictions and forecasting discussions',
+                        icon: 'fas fa-chart-line',
+                        messages: [
+                            {
+                                author: 'Lisa Chen',
+                                role: 'Data Analyst',
+                                avatar: 'LC',
+                                time: '09:15 AM',
+                                text: 'Latest ML model shows 92% accuracy for 24-hour water level predictions. Looking very promising!'
+                            }
+                        ]
+                    }
+                },
+                direct: {
+                    'john-doe': {
+                        name: 'John Doe',
+                        role: 'Senior Engineer',
+                        avatar: 'JD',
+                        status: 'online',
+                        messages: [
+                            {
+                                author: 'John Doe',
+                                role: 'Senior Engineer',
+                                avatar: 'JD',
+                                time: '11:20 AM',
+                                text: 'Hey! Can you review the latest discharge calculations when you have a moment?'
+                            }
+                        ]
+                    },
+                    'sarah-wilson': {
+                        name: 'Sarah Wilson',
+                        role: 'Dam Operator',
+                        avatar: 'SW',
+                        status: 'away',
+                        messages: []
+                    }
+                }
+            };
+            
+            // Toggle chat window
+            chatToggle.addEventListener('click', function() {
+                if (chatWindow.classList.contains('show')) {
+                    chatWindow.classList.remove('show');
+                    chatOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                } else {
+                    chatWindow.classList.add('show');
+                    chatOverlay.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                    isMinimized = false;
+                    chatInput.focus();
+                }
+            });
+            
+            // Close chat
+            chatClose.addEventListener('click', function() {
+                chatWindow.classList.remove('show');
+                chatOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+            
+            // Minimize chat
+            chatMinimize.addEventListener('click', function() {
+                isMinimized = !isMinimized;
+                if (isMinimized) {
+                    chatWindow.style.height = '60px';
+                    chatMinimize.innerHTML = '<i class="fas fa-plus"></i>';
+                } else {
+                    // Restore to responsive height based on screen size
+                    if (isMaximized) {
+                        // If maximized, restore to maximized state
+                        const isMobile = window.innerWidth <= 768;
+                        const padding = isMobile ? '10px' : '20px';
+                        
+                        chatWindow.style.width = `calc(100vw - ${parseInt(padding) * 2}px)`;
+                        chatWindow.style.height = `calc(100vh - ${parseInt(padding) * 2}px)`;
+                        chatWindow.style.left = padding;
+                        chatWindow.style.top = padding;
+                    } else {
+                        // Restore to normal responsive size
+                        const screenWidth = window.innerWidth;
+                        if (screenWidth <= 900) {
+                            chatWindow.style.width = '300px';
+                            chatWindow.style.height = '400px';
+                        } else if (screenWidth <= 1024) {
+                            chatWindow.style.width = '320px';
+                            chatWindow.style.height = '450px';
+                        } else if (screenWidth <= 1200) {
+                            chatWindow.style.width = '350px';
+                            chatWindow.style.height = '500px';
+                        } else {
+                            chatWindow.style.width = '400px';
+                            chatWindow.style.height = '600px';
+                        }
+                    }
+                    chatMinimize.innerHTML = '<i class="fas fa-minus"></i>';
+                }
+            });
+
+            // Make chat window draggable
+            let isDragging = false;
+            let dragOffset = { x: 0, y: 0 };
+            const chatHeader = document.querySelector('.chat-header');
+
+            if (chatHeader) {
+                chatHeader.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('.chat-controls')) return; // Don't drag when clicking controls
+                    
+                    isDragging = true;
+                    const rect = chatWindow.getBoundingClientRect();
+                    dragOffset.x = e.clientX - rect.left;
+                    dragOffset.y = e.clientY - rect.top;
+                    
+                    chatWindow.style.cursor = 'grabbing';
+                    e.preventDefault();
+                });
+            }
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const newX = e.clientX - dragOffset.x;
+                const newY = e.clientY - dragOffset.y;
+                
+                // Constrain to viewport bounds
+                const maxX = window.innerWidth - chatWindow.offsetWidth;
+                const maxY = window.innerHeight - chatWindow.offsetHeight;
+                
+                chatWindow.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
+                chatWindow.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+                chatWindow.style.right = 'auto';
+                chatWindow.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    chatWindow.style.cursor = 'default';
+                }
+            });
+
+            // Maximize chat window
+            let isMaximized = false;
+            let originalPosition = {};
+
+            chatMaximize.addEventListener('click', function() {
+                if (!isMaximized) {
+                    // Store original position and size
+                    originalPosition = {
+                        left: chatWindow.style.left || 'auto',
+                        top: chatWindow.style.top || 'auto',
+                        right: chatWindow.style.right || '0px',
+                        bottom: chatWindow.style.bottom || '70px',
+                        width: chatWindow.style.width || '400px',
+                        height: chatWindow.style.height || '600px'
+                    };
+
+                    // Add maximized class for full-screen styling
+                    chatWindow.classList.add('maximized');
+                    
+                    chatMaximize.innerHTML = '<i class="fas fa-compress"></i>';
+                    chatMaximize.title = 'Restore';
+                    isMaximized = true;
+                    
+                    // Ensure chat content is visible and properly sized
+                    setTimeout(() => {
+                        const chatMessages = document.querySelector('.chat-messages');
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }, 100);
+                    
+                } else {
+                    // Restore original position and size
+                    chatWindow.style.left = originalPosition.left;
+                    chatWindow.style.top = originalPosition.top;
+                    chatWindow.style.right = originalPosition.right;
+                    chatWindow.style.bottom = originalPosition.bottom;
+                    chatWindow.style.width = originalPosition.width;
+                    chatWindow.style.height = originalPosition.height;
+                    chatWindow.style.zIndex = '1000';
+                    chatWindow.style.borderRadius = '12px';
+                    
+                    // Remove maximized class
+                    chatWindow.classList.remove('maximized');
+                    
+                    chatMaximize.innerHTML = '<i class="fas fa-expand"></i>';
+                    chatMaximize.title = 'Maximize';
+                    isMaximized = false;
+                }
+            });
+
+            // Close chat when clicking overlay
+            chatOverlay.addEventListener('click', function() {
+                chatWindow.classList.remove('show');
+                chatOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+
+            // Handle window resize for responsive chat
+            window.addEventListener('resize', function() {
+                if (chatWindow.classList.contains('show') && !isMinimized) {
+                    if (isMaximized) {
+                        // Maximized state is handled by CSS, no need to adjust inline styles
+                        // The CSS class will automatically handle the full-screen sizing
+                    } else {
+                        // Adjust normal chat window size based on new screen size
+                        const screenWidth = window.innerWidth;
+                        if (screenWidth <= 900) {
+                            chatWindow.style.width = '300px';
+                            chatWindow.style.height = '400px';
+                        } else if (screenWidth <= 1024) {
+                            chatWindow.style.width = '320px';
+                            chatWindow.style.height = '450px';
+                        } else if (screenWidth <= 1200) {
+                            chatWindow.style.width = '350px';
+                            chatWindow.style.height = '500px';
+                        } else {
+                            chatWindow.style.width = '400px';
+                            chatWindow.style.height = '600px';
+                        }
+                    }
+                }
+            });
+
+            // Close chat on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && chatWindow.classList.contains('show')) {
+                    chatWindow.classList.remove('show');
+                    chatOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Function to ensure chat content is properly displayed
+            function ensureChatContentVisibility() {
+                const chatMessages = document.querySelector('.chat-messages');
+                const chatSidebar = document.querySelector('.chat-sidebar');
+                const chatContent = document.querySelector('.chat-content');
+                
+                if (chatMessages) {
+                    chatMessages.style.display = 'flex';
+                    chatMessages.style.flexDirection = 'column';
+                    chatMessages.style.flex = '1';
+                }
+                
+                if (chatSidebar) {
+                    chatSidebar.style.display = 'flex';
+                    chatSidebar.style.flexDirection = 'column';
+                }
+                
+                if (chatContent) {
+                    chatContent.style.display = 'flex';
+                    chatContent.style.flexDirection = 'column';
+                    chatContent.style.flex = '1';
+                }
+            }
+
+            // Call this function when chat is opened
+            chatToggle.addEventListener('click', function() {
+                if (!chatWindow.classList.contains('show')) {
+                    setTimeout(ensureChatContentVisibility, 100);
+                }
+            });
+            
+            // Tab switching
+            channelsTab.addEventListener('click', function() {
+                channelsTab.classList.add('active');
+                directTab.classList.remove('active');
+                channelsList.classList.add('active');
+                directList.classList.remove('active');
+            });
+            
+            directTab.addEventListener('click', function() {
+                directTab.classList.add('active');
+                channelsTab.classList.remove('active');
+                directList.classList.add('active');
+                channelsList.classList.remove('active');
+            });
+            
+            // Chat item selection
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active from all items
+                    document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
+                    
+                    // Add active to clicked item
+                    this.classList.add('active');
+                    
+                    // Remove unread count
+                    const unreadCount = this.querySelector('.unread-count');
+                    if (unreadCount) {
+                        unreadCount.remove();
+                        updateChatBadge();
+                    }
+                    
+                    // Update current chat
+                    currentChat.type = this.dataset.type;
+                    currentChat.id = this.dataset.id;
+                    
+                    // Load chat messages
+                    loadChatMessages();
+                });
+            });
+            
+            // Send message
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                const newMessage = {
+                    author: 'You',
+                    role: 'System Administrator',
+                    avatar: 'YO',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    text: message
+                };
+                
+                // Add to chat data
+                if (currentChat.type === 'channel') {
+                    chatData.channels[currentChat.id].messages.push(newMessage);
+                } else {
+                    chatData.direct[currentChat.id].messages.push(newMessage);
+                }
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Reload messages
+                loadChatMessages();
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Send button click
+            chatSend.addEventListener('click', sendMessage);
+            
+            // Enter key to send
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Load chat messages
+            function loadChatMessages() {
+                let chatInfo, messages;
+                
+                if (currentChat.type === 'channel') {
+                    chatInfo = chatData.channels[currentChat.id];
+                    currentChatName.innerHTML = `<i class="${chatInfo.icon}"></i> ${chatInfo.name}`;
+                    currentChatDesc.textContent = chatInfo.description;
+                    messages = chatInfo.messages;
+                } else {
+                    chatInfo = chatData.direct[currentChat.id];
+                    currentChatName.innerHTML = `<i class="fas fa-user"></i> ${chatInfo.name}`;
+                    currentChatDesc.textContent = chatInfo.role;
+                    messages = chatInfo.messages;
+                }
+                
+                // Clear current messages (keep header)
+                const headerInfo = chatMessages.querySelector('.chat-header-info');
+                chatMessages.innerHTML = '';
+                chatMessages.appendChild(headerInfo);
+                
+                // Add messages
+                messages.forEach(msg => {
+                    const messageGroup = document.createElement('div');
+                    messageGroup.className = 'message-group';
+                    
+                    messageGroup.innerHTML = `
+                        <div class="message-avatar">${msg.avatar}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">${msg.author}</span>
+                                <span class="message-role">${msg.role}</span>
+                                <span class="message-time">${msg.time}</span>
+                            </div>
+                            <div class="message-text">${msg.text}</div>
+                        </div>
+                    `;
+                    
+                    chatMessages.appendChild(messageGroup);
+                });
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            }
+            
+            // Update chat badge count
+            function updateChatBadge() {
+                let unreadCount = 0;
+                document.querySelectorAll('.unread-count').forEach(badge => {
+                    unreadCount += parseInt(badge.textContent) || 0;
+                });
+                
+                const chatBadge = document.getElementById('chatBadge');
+                if (unreadCount > 0) {
+                    chatBadge.textContent = unreadCount;
+                    chatBadge.style.display = 'flex';
+                } else {
+                    chatBadge.style.display = 'none';
+                }
+            }
+            
+            // Initialize
+            updateChatBadge();
+            loadChatMessages();
         }
 
         // Utility functions
@@ -3529,5 +5004,204 @@
             </div>
         </div>
     </footer>
+
+    <!-- Chat Overlay Background -->
+    <div id="chatOverlay" class="chat-overlay"></div>
+    
+    <!-- Floating Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <div id="chatToggle" class="chat-toggle">
+            <span class="chat-text">Chat</span>
+            <i class="fas fa-chevron-up chat-arrow"></i>
+            <span class="chat-badge" id="chatBadge">3</span>
+        </div>
+        
+        <!-- Chat Window -->
+        <div id="chatWindow" class="chat-window">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fas fa-comments"></i>
+                    <span>Hydro-M Chat</span>
+                </div>
+                <div class="chat-controls">
+                    <button id="chatMaximize" class="chat-btn" title="Maximize">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="chatMinimize" class="chat-btn" title="Minimize">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button id="chatClose" class="chat-btn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Navigation -->
+            <div class="chat-nav">
+                <button id="channelsTab" class="chat-nav-btn active">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Channels</span>
+                </button>
+                <button id="directTab" class="chat-nav-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Direct Messages</span>
+                </button>
+            </div>
+            
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <!-- Channels List -->
+                <div id="channelsList" class="chat-list active">
+                    <div class="chat-list-header">
+                        <span>Channels</span>
+                        <button class="chat-add-btn" id="addChannel">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item active" data-type="channel" data-id="general">
+                            <i class="fas fa-hashtag"></i>
+                            <span>general</span>
+                            <span class="unread-count">2</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="emergencies">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>emergencies</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="maintenance">
+                            <i class="fas fa-wrench"></i>
+                            <span>maintenance</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="predictions">
+                            <i class="fas fa-chart-line"></i>
+                            <span>predictions</span>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-bujagali">
+                            <i class="fas fa-water"></i>
+                            <span>dam-bujagali</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-kiira">
+                            <i class="fas fa-water"></i>
+                            <span>dam-kiira</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Direct Messages List -->
+                <div id="directList" class="chat-list">
+                    <div class="chat-list-header">
+                        <span>Direct Messages</span>
+                        <button class="chat-add-btn" id="addDirect">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item" data-type="direct" data-id="john-doe">
+                            <div class="user-avatar online">JD</div>
+                            <div class="user-info">
+                                <span class="user-name">John Doe</span>
+                                <span class="user-role">Senior Engineer</span>
+                            </div>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="sarah-wilson">
+                            <div class="user-avatar away">SW</div>
+                            <div class="user-info">
+                                <span class="user-name">Sarah Wilson</span>
+                                <span class="user-role">Dam Operator</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="mike-johnson">
+                            <div class="user-avatar offline">MJ</div>
+                            <div class="user-info">
+                                <span class="user-name">Mike Johnson</span>
+                                <span class="user-role">Maintenance Chief</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="lisa-chen">
+                            <div class="user-avatar online">LC</div>
+                            <div class="user-info">
+                                <span class="user-name">Lisa Chen</span>
+                                <span class="user-role">Data Analyst</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Content -->
+            <div class="chat-content">
+                <!-- Chat Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-header-info">
+                        <div class="chat-channel-info">
+                            <i class="fas fa-hashtag"></i>
+                            <div>
+                                <h4 id="currentChatName">general</h4>
+                                <p id="currentChatDesc">General operational discussions</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Messages -->
+                    <div class="message-group">
+                        <div class="message-avatar">JD</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">John Doe</span>
+                                <span class="message-role">Senior Engineer</span>
+                                <span class="message-time">10:30 AM</span>
+                            </div>
+                            <div class="message-text">Good morning team! Water levels are looking stable across all dams today. 💧</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">SW</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Sarah Wilson</span>
+                                <span class="message-role">Dam Operator</span>
+                                <span class="message-time">10:32 AM</span>
+                            </div>
+                            <div class="message-text">Thanks John! I'm seeing some minor fluctuations at Bujagali, but nothing concerning yet.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">LC</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Lisa Chen</span>
+                                <span class="message-role">Data Analyst</span>
+                                <span class="message-time">10:35 AM</span>
+                            </div>
+                            <div class="message-text">AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <button class="chat-attachment-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+                        <button class="chat-emoji-btn">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <button id="chatSend" class="chat-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
