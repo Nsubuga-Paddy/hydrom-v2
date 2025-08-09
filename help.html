@@ -92,9 +92,10 @@
             text-decoration: none;
             padding: 0.75rem 1.5rem;
             transition: all 0.3s ease;
-            font-weight: 500;
+            font-weight: 700;
             font-size: 0.95rem;
             position: relative;
+            white-space: nowrap;
         }
 
         .nav-link:hover {
@@ -2246,7 +2247,7 @@
                 <a href="./about-us.html" class="nav-link">About Us</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">Contact Us</a>
+                <a href="./contact-us.html" class="nav-link">Contact Us</a>
             </li>
             <li class="nav-item">
                 <a href="./download-data.html" class="nav-link">Download Data</a>
@@ -2260,7 +2261,7 @@
             <div class="user-dropdown" id="userDropdown">
                 <button class="user-btn" id="userBtn">
                     <i class="fas fa-user"></i>
-                    <span>John Doe</span>
+                    <span>Paddy</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="dropdown-menu" id="dropdownMenu">
@@ -2289,7 +2290,7 @@
                 <p>Real-time dam status and data</p>
             </div>
             <div class="dam-list">
-                <a href="#" class="dam-item featured">
+                <a href="./realtime.html" class="dam-item featured">
                     <div class="dam-icon">
                         <img src="dam.png" alt="Dam Icon">
                     </div>
@@ -2304,51 +2305,7 @@
                         </div>
                     </div>
                 </a>
-                <a href="#" class="dam-item">
-                    <div class="dam-icon">
-                        <img src="dam.png" alt="Dam Icon">
-                    </div>
-                    <div class="dam-info">
-                        <h4>Kiira HPP</h4>
-                        <div class="dam-status">
-                            <div class="status-item">
-                                <span class="status-label">Water Level:</span>
-                                <span class="status-value">1480mm</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Dispatch:</span>
-                                <span class="status-value">200MW</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Discharge:</span>
-                                <span class="status-value">520 m³/s</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" class="dam-item">
-                    <div class="dam-icon">
-                        <img src="dam.png" alt="Dam Icon">
-                    </div>
-                    <div class="dam-info">
-                        <h4>Bujagali HPP</h4>
-                        <div class="dam-status">
-                            <div class="status-item">
-                                <span class="status-label">Water Level:</span>
-                                <span class="status-value">1520mm</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Dispatch:</span>
-                                <span class="status-value">250MW</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Discharge:</span>
-                                <span class="status-value">380 m³/s</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                <a href="#" class="dam-item">
+                <a href="./realtime.html" class="dam-item">
                     <div class="dam-icon">
                         <img src="dam.png" alt="Dam Icon">
                     </div>
@@ -3041,6 +2998,13 @@
             
             damItems.forEach(item => {
                 item.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    if (href && href !== '#') {
+                        // Navigate to the linked page
+                        window.location.href = href;
+                    } else {
+                        // If no valid href, just update the UI state
                     e.preventDefault();
                     
                     // Remove active class from all dam items
@@ -3055,6 +3019,7 @@
                     
                     // Here you would typically navigate to the dam's detail page
                     // or update the main content area
+                    }
                 });
             });
 
@@ -3452,5 +3417,204 @@
             </div>
         </div>
     </footer>
+
+    <!-- Chat Overlay Background -->
+    <div id="chatOverlay" class="chat-overlay"></div>
+    
+    <!-- Floating Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <div id="chatToggle" class="chat-toggle">
+            <span class="chat-text">Chat</span>
+            <i class="fas fa-chevron-up chat-arrow"></i>
+            <span class="chat-badge" id="chatBadge">3</span>
+        </div>
+        
+        <!-- Chat Window -->
+        <div id="chatWindow" class="chat-window">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fas fa-comments"></i>
+                    <span>Hydro-M Chat</span>
+                </div>
+                <div class="chat-controls">
+                    <button id="chatMaximize" class="chat-btn" title="Maximize">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="chatMinimize" class="chat-btn" title="Minimize">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button id="chatClose" class="chat-btn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Navigation -->
+            <div class="chat-nav">
+                <button id="channelsTab" class="chat-nav-btn active">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Channels</span>
+                </button>
+                <button id="directTab" class="chat-nav-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Direct Messages</span>
+                </button>
+            </div>
+            
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <!-- Channels List -->
+                <div id="channelsList" class="chat-list active">
+                    <div class="chat-list-header">
+                        <span>Channels</span>
+                        <button class="chat-add-btn" id="addChannel">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item active" data-type="channel" data-id="general">
+                            <i class="fas fa-hashtag"></i>
+                            <span>general</span>
+                            <span class="unread-count">2</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="emergencies">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>emergencies</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="maintenance">
+                            <i class="fas fa-wrench"></i>
+                            <span>maintenance</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="predictions">
+                            <i class="fas fa-chart-line"></i>
+                            <span>predictions</span>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-bujagali">
+                            <i class="fas fa-water"></i>
+                            <span>dam-bujagali</span>
+                        </div>
+                        <div class="chat-item" data-type="channel" data-id="dam-kiira">
+                            <i class="fas fa-water"></i>
+                            <span>dam-kiira</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Direct Messages List -->
+                <div id="directList" class="chat-list">
+                    <div class="chat-list-header">
+                        <span>Direct Messages</span>
+                        <button class="chat-add-btn" id="addDirect">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="chat-items">
+                        <div class="chat-item" data-type="direct" data-id="john-doe">
+                            <div class="user-avatar online">JD</div>
+                            <div class="user-info">
+                                <span class="user-name">John Doe</span>
+                                <span class="user-role">Senior Engineer</span>
+                            </div>
+                            <span class="unread-count">1</span>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="sarah-wilson">
+                            <div class="user-avatar away">SW</div>
+                            <div class="user-info">
+                                <span class="user-name">Sarah Wilson</span>
+                                <span class="user-role">Dam Operator</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="mike-johnson">
+                            <div class="user-avatar offline">MJ</div>
+                            <div class="user-info">
+                                <span class="user-name">Mike Johnson</span>
+                                <span class="user-role">Maintenance Chief</span>
+                            </div>
+                        </div>
+                        <div class="chat-item" data-type="direct" data-id="lisa-chen">
+                            <div class="user-avatar online">LC</div>
+                            <div class="user-info">
+                                <span class="user-name">Lisa Chen</span>
+                                <span class="user-role">Data Analyst</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Content -->
+            <div class="chat-content">
+                <!-- Chat Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-header-info">
+                        <div class="chat-channel-info">
+                            <i class="fas fa-hashtag"></i>
+                            <div>
+                                <h4 id="currentChatName">general</h4>
+                                <p id="currentChatDesc">General operational discussions</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Messages -->
+                    <div class="message-group">
+                        <div class="message-avatar">JD</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">John Doe</span>
+                                <span class="message-role">Senior Engineer</span>
+                                <span class="message-time">10:30 AM</span>
+                            </div>
+                            <div class="message-text">Good morning team! Water levels are looking stable across all dams today. 💧</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">SW</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Sarah Wilson</span>
+                                <span class="message-role">Dam Operator</span>
+                                <span class="message-time">10:32 AM</span>
+                            </div>
+                            <div class="message-text">Thanks John! I'm seeing some minor fluctuations at Bujagali, but nothing concerning yet.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-group">
+                        <div class="message-avatar">LC</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Lisa Chen</span>
+                                <span class="message-role">Data Analyst</span>
+                                <span class="message-time">10:35 AM</span>
+                            </div>
+                            <div class="message-text">AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <button class="chat-attachment-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+                        <button class="chat-emoji-btn">
+                            <i class="fas fa-smile"></i>
+                        </button>
+                        <button id="chatSend" class="chat-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
