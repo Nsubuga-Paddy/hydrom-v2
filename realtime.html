@@ -2525,6 +2525,26 @@
                         <canvas id="efficiencyChart" width="400" height="200"></canvas>
                     </div>
                 </div>
+
+                <!-- Temperature & Environmental Chart -->
+                <div class="prediction-card">
+                    <div class="card-header">
+                        <h3>Environmental Conditions</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="environmentChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Turbine Performance Chart -->
+                <div class="prediction-card">
+                    <div class="card-header">
+                        <h3>Turbine Performance</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="turbineChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -3034,22 +3054,28 @@
             // Theme switching functionality
 
         // Real-time Charts and Data Updates
+        let powerChart, waterChart, dischargeChart, efficiencyChart, environmentChart, turbineChart;
+
         function initializeCharts() {
             // Power Generation Chart
             const powerCtx = document.getElementById('powerChart');
             if (powerCtx) {
-                const powerChart = new Chart(powerCtx, {
+                powerChart = new Chart(powerCtx, {
                     type: 'line',
                     data: {
                         labels: generateTimeLabels(24),
                         datasets: [{
                             label: 'Power Generated (MW)',
-                            data: generateRandomData(24, 180, 220),
+                            data: generateRealisticPowerData(24),
                             borderColor: '#0896FC',
                             backgroundColor: 'rgba(8, 150, 252, 0.1)',
-                            borderWidth: 2,
+                            borderWidth: 3,
                             fill: true,
-                            tension: 0.4
+                            tension: 0.4,
+                            pointBackgroundColor: '#0896FC',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
                         }]
                     },
                     options: {
@@ -3057,7 +3083,21 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#0896FC',
+                                borderWidth: 1
                             }
                         },
                         scales: {
@@ -3067,6 +3107,11 @@
                                 max: 250,
                                 grid: {
                                     color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' MW';
+                                    }
                                 }
                             },
                             x: {
@@ -3074,6 +3119,10 @@
                                     display: false
                                 }
                             }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
                         }
                     }
                 });
@@ -3082,18 +3131,31 @@
             // Water Level Chart
             const waterCtx = document.getElementById('waterChart');
             if (waterCtx) {
-                const waterChart = new Chart(waterCtx, {
+                waterChart = new Chart(waterCtx, {
                     type: 'line',
                     data: {
                         labels: generateTimeLabels(24),
                         datasets: [{
                             label: 'Water Level (mm)',
-                            data: generateRandomData(24, 1450, 1520),
+                            data: generateRealisticWaterData(24),
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 2,
+                            borderWidth: 3,
                             fill: true,
-                            tension: 0.4
+                            tension: 0.4,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }, {
+                            label: 'Critical Level',
+                            data: Array(24).fill(1500),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
                         }]
                     },
                     options: {
@@ -3101,7 +3163,21 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#10b981',
+                                borderWidth: 1
                             }
                         },
                         scales: {
@@ -3111,6 +3187,11 @@
                                 max: 1600,
                                 grid: {
                                     color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' mm';
+                                    }
                                 }
                             },
                             x: {
@@ -3118,6 +3199,10 @@
                                     display: false
                                 }
                             }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
                         }
                     }
                 });
@@ -3126,16 +3211,26 @@
             // Discharge Chart
             const dischargeCtx = document.getElementById('dischargeChart');
             if (dischargeCtx) {
-                const dischargeChart = new Chart(dischargeCtx, {
+                dischargeChart = new Chart(dischargeCtx, {
                     type: 'bar',
                     data: {
                         labels: generateTimeLabels(12),
                         datasets: [{
                             label: 'Discharge (m³/s)',
-                            data: generateRandomData(12, 450, 600),
+                            data: generateRealisticDischargeData(12),
                             backgroundColor: 'rgba(245, 158, 11, 0.8)',
                             borderColor: '#f59e0b',
-                            borderWidth: 1
+                            borderWidth: 2,
+                            borderRadius: 4,
+                            borderSkipped: false,
+                        }, {
+                            label: 'Inflow (m³/s)',
+                            data: generateRealisticInflowData(12),
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            borderRadius: 4,
+                            borderSkipped: false,
                         }]
                     },
                     options: {
@@ -3143,16 +3238,35 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#f59e0b',
+                                borderWidth: 1
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: false,
-                                min: 400,
-                                max: 650,
+                                min: 300,
+                                max: 700,
                                 grid: {
                                     color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' m³/s';
+                                    }
                                 }
                             },
                             x: {
@@ -3160,6 +3274,10 @@
                                     display: false
                                 }
                             }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
                         }
                     }
                 });
@@ -3168,15 +3286,16 @@
             // Efficiency Chart
             const efficiencyCtx = document.getElementById('efficiencyChart');
             if (efficiencyCtx) {
-                const efficiencyChart = new Chart(efficiencyCtx, {
+                efficiencyChart = new Chart(efficiencyCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Efficiency', 'Loss'],
+                        labels: ['Efficient Operation', 'System Loss', 'Maintenance'],
                         datasets: [{
-                            data: [92.5, 7.5],
+                            data: [88.5, 9.2, 2.3],
                             backgroundColor: [
                                 '#10b981',
-                                '#e5e7eb'
+                                '#f59e0b',
+                                '#ef4444'
                             ],
                             borderWidth: 0
                         }]
@@ -3186,10 +3305,210 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                return {
+                                                    text: `${label}: ${value}%`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    strokeStyle: data.datasets[0].backgroundColor[i],
+                                                    pointStyle: 'circle'
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
                             }
                         },
-                        cutout: '70%'
+                        cutout: '60%',
+                        elements: {
+                            arc: {
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Environmental Conditions Chart
+            const environmentCtx = document.getElementById('environmentChart');
+            if (environmentCtx) {
+                environmentChart = new Chart(environmentCtx, {
+                    type: 'line',
+                    data: {
+                        labels: generateTimeLabels(24),
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: generateRealisticTemperatureData(24),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        }, {
+                            label: 'Humidity (%)',
+                            data: generateRealisticHumidityData(24),
+                            borderColor: '#0896FC',
+                            backgroundColor: 'rgba(8, 150, 252, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#f59e0b',
+                                borderWidth: 1
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                min: 15,
+                                max: 35,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + ' °C';
+                                    }
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                min: 40,
+                                max: 100,
+                                grid: {
+                                    drawOnChartArea: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            }
+
+            // Turbine Performance Chart
+            const turbineCtx = document.getElementById('turbineChart');
+            if (turbineCtx) {
+                turbineChart = new Chart(turbineCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Efficiency', 'Speed', 'Output', 'Reliability', 'Maintenance'],
+                        datasets: [{
+                            label: 'Turbine #1',
+                            data: [92, 85, 88, 95, 78],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }, {
+                            label: 'Turbine #2',
+                            data: [89, 88, 85, 92, 82],
+                            borderColor: '#0896FC',
+                            backgroundColor: 'rgba(8, 150, 252, 0.2)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#0896FC',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        }
                     }
                 });
             }
@@ -3211,6 +3530,148 @@
             const data = [];
             for (let i = 0; i < count; i++) {
                 data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            }
+            return data;
+        }
+
+        // Generate realistic power generation data with daily patterns
+        function generateRealisticPowerData(count) {
+            const data = [];
+            const baseValue = 200;
+            for (let i = 0; i < count; i++) {
+                // Simulate daily power demand patterns
+                const hour = i;
+                let multiplier = 1;
+                
+                // Lower demand at night (0-6 hours)
+                if (hour >= 0 && hour <= 6) {
+                    multiplier = 0.7 + Math.random() * 0.2;
+                } 
+                // Morning peak (7-9 hours)
+                else if (hour >= 7 && hour <= 9) {
+                    multiplier = 0.9 + Math.random() * 0.2;
+                }
+                // Day demand (10-17 hours)
+                else if (hour >= 10 && hour <= 17) {
+                    multiplier = 0.85 + Math.random() * 0.25;
+                }
+                // Evening peak (18-21 hours)
+                else if (hour >= 18 && hour <= 21) {
+                    multiplier = 0.95 + Math.random() * 0.15;
+                }
+                // Night decline (22-23 hours)
+                else {
+                    multiplier = 0.8 + Math.random() * 0.2;
+                }
+                
+                const value = Math.round(baseValue * multiplier + (Math.random() - 0.5) * 20);
+                data.push(Math.max(150, Math.min(250, value)));
+            }
+            return data;
+        }
+
+        // Generate realistic water level data with gradual changes
+        function generateRealisticWaterData(count) {
+            const data = [];
+            let currentLevel = 1480 + Math.random() * 40; // Start between 1480-1520
+            
+            for (let i = 0; i < count; i++) {
+                // Add gradual trend with some noise
+                const trend = (Math.random() - 0.5) * 5;
+                const noise = (Math.random() - 0.5) * 10;
+                currentLevel += trend + noise;
+                
+                // Keep within realistic bounds
+                currentLevel = Math.max(1450, Math.min(1520, currentLevel));
+                data.push(Math.round(currentLevel));
+            }
+            return data;
+        }
+
+        // Generate realistic discharge data
+        function generateRealisticDischargeData(count) {
+            const data = [];
+            const baseDischarge = 520;
+            
+            for (let i = 0; i < count; i++) {
+                const variation = (Math.random() - 0.5) * 100;
+                const seasonal = Math.sin(i / count * Math.PI * 2) * 50;
+                const value = Math.round(baseDischarge + variation + seasonal);
+                data.push(Math.max(400, Math.min(650, value)));
+            }
+            return data;
+        }
+
+        // Generate realistic inflow data
+        function generateRealisticInflowData(count) {
+            const data = [];
+            const baseInflow = 580;
+            
+            for (let i = 0; i < count; i++) {
+                const variation = (Math.random() - 0.5) * 120;
+                const seasonal = Math.cos(i / count * Math.PI * 2) * 60;
+                const value = Math.round(baseInflow + variation + seasonal);
+                data.push(Math.max(350, Math.min(700, value)));
+            }
+            return data;
+        }
+
+        // Generate realistic temperature data with daily patterns
+        function generateRealisticTemperatureData(count) {
+            const data = [];
+            const baseTemp = 25;
+            
+            for (let i = 0; i < count; i++) {
+                const hour = i;
+                let variation = 0;
+                
+                // Cooler at night (0-6 hours)
+                if (hour >= 0 && hour <= 6) {
+                    variation = -5 + Math.random() * 3;
+                }
+                // Warming up in morning (7-11 hours)
+                else if (hour >= 7 && hour <= 11) {
+                    variation = -2 + Math.random() * 4;
+                }
+                // Peak heat in afternoon (12-16 hours)
+                else if (hour >= 12 && hour <= 16) {
+                    variation = 2 + Math.random() * 6;
+                }
+                // Cooling in evening (17-23 hours)
+                else {
+                    variation = -1 + Math.random() * 3;
+                }
+                
+                const value = baseTemp + variation + (Math.random() - 0.5) * 2;
+                data.push(Math.round(value * 10) / 10);
+            }
+            return data;
+        }
+
+        // Generate realistic humidity data (inverse to temperature)
+        function generateRealisticHumidityData(count) {
+            const data = [];
+            const baseHumidity = 70;
+            
+            for (let i = 0; i < count; i++) {
+                const hour = i;
+                let variation = 0;
+                
+                // Higher humidity at night (0-6 hours)
+                if (hour >= 0 && hour <= 6) {
+                    variation = 15 + Math.random() * 10;
+                }
+                // Lower humidity during day (7-17 hours)
+                else if (hour >= 7 && hour <= 17) {
+                    variation = -10 + Math.random() * 15;
+                }
+                // Rising humidity in evening (18-23 hours)
+                else {
+                    variation = 5 + Math.random() * 10;
+                }
+                
+                const value = baseHumidity + variation + (Math.random() - 0.5) * 10;
+                data.push(Math.max(40, Math.min(100, Math.round(value))));
             }
             return data;
         }
@@ -3374,22 +3835,51 @@
             // Update power chart
             const powerChart = Chart.getChart('powerChart');
             if (powerChart) {
-                powerChart.data.datasets[0].data = generateRandomData(24, dam.powerRange[0], dam.powerRange[1]);
+                powerChart.data.datasets[0].data = generateRealisticPowerData(24);
                 powerChart.update('none');
             }
 
             // Update water level chart
             const waterChart = Chart.getChart('waterChart');
             if (waterChart) {
-                waterChart.data.datasets[0].data = generateRandomData(24, dam.waterLevelRange[0], dam.waterLevelRange[1]);
+                waterChart.data.datasets[0].data = generateRealisticWaterData(24);
                 waterChart.update('none');
             }
 
             // Update discharge chart
             const dischargeChart = Chart.getChart('dischargeChart');
             if (dischargeChart) {
-                dischargeChart.data.datasets[0].data = generateRandomData(12, dam.dischargeRange[0], dam.dischargeRange[1]);
+                dischargeChart.data.datasets[0].data = generateRealisticDischargeData(12);
                 dischargeChart.update('none');
+            }
+
+            // Update environment chart
+            const environmentChart = Chart.getChart('environmentChart');
+            if (environmentChart) {
+                environmentChart.data.datasets[0].data = generateRealisticTemperatureData(24);
+                environmentChart.data.datasets[1].data = generateRealisticHumidityData(24);
+                environmentChart.update('none');
+            }
+
+            // Update turbine chart (radar chart - static data for now)
+            const turbineChart = Chart.getChart('turbineChart');
+            if (turbineChart) {
+                // Add some variation to turbine performance data
+                turbineChart.data.datasets[0].data = [
+                    90 + Math.random() * 5,
+                    85 + Math.random() * 8,
+                    88 + Math.random() * 6,
+                    93 + Math.random() * 4,
+                    78 + Math.random() * 8
+                ];
+                turbineChart.data.datasets[1].data = [
+                    87 + Math.random() * 6,
+                    88 + Math.random() * 7,
+                    85 + Math.random() * 8,
+                    90 + Math.random() * 5,
+                    80 + Math.random() * 6
+                ];
+                turbineChart.update('none');
             }
         }
 
@@ -3615,204 +4105,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Chat Overlay Background -->
-    <div id="chatOverlay" class="chat-overlay"></div>
-    
-    <!-- Floating Chat Widget -->
-    <div id="chatWidget" class="chat-widget">
-        <!-- Chat Toggle Button -->
-        <div id="chatToggle" class="chat-toggle">
-            <span class="chat-text">Chat</span>
-            <i class="fas fa-chevron-up chat-arrow"></i>
-            <span class="chat-badge" id="chatBadge">3</span>
-        </div>
-        
-        <!-- Chat Window -->
-        <div id="chatWindow" class="chat-window">
-            <!-- Chat Header -->
-            <div class="chat-header">
-                <div class="chat-title">
-                    <i class="fas fa-comments"></i>
-                    <span>Hydro-M Chat</span>
-                </div>
-                <div class="chat-controls">
-                    <button id="chatMaximize" class="chat-btn" title="Maximize">
-                        <i class="fas fa-expand"></i>
-                    </button>
-                    <button id="chatMinimize" class="chat-btn" title="Minimize">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <button id="chatClose" class="chat-btn" title="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Chat Navigation -->
-            <div class="chat-nav">
-                <button id="channelsTab" class="chat-nav-btn active">
-                    <i class="fas fa-hashtag"></i>
-                    <span>Channels</span>
-                </button>
-                <button id="directTab" class="chat-nav-btn">
-                    <i class="fas fa-user"></i>
-                    <span>Direct Messages</span>
-                </button>
-            </div>
-            
-            <!-- Chat Sidebar -->
-            <div class="chat-sidebar">
-                <!-- Channels List -->
-                <div id="channelsList" class="chat-list active">
-                    <div class="chat-list-header">
-                        <span>Channels</span>
-                        <button class="chat-add-btn" id="addChannel">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="chat-items">
-                        <div class="chat-item active" data-type="channel" data-id="general">
-                            <i class="fas fa-hashtag"></i>
-                            <span>general</span>
-                            <span class="unread-count">2</span>
-                        </div>
-                        <div class="chat-item" data-type="channel" data-id="emergencies">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>emergencies</span>
-                        </div>
-                        <div class="chat-item" data-type="channel" data-id="maintenance">
-                            <i class="fas fa-wrench"></i>
-                            <span>maintenance</span>
-                        </div>
-                        <div class="chat-item" data-type="channel" data-id="predictions">
-                            <i class="fas fa-chart-line"></i>
-                            <span>predictions</span>
-                            <span class="unread-count">1</span>
-                        </div>
-                        <div class="chat-item" data-type="channel" data-id="dam-bujagali">
-                            <i class="fas fa-water"></i>
-                            <span>dam-bujagali</span>
-                        </div>
-                        <div class="chat-item" data-type="channel" data-id="dam-kiira">
-                            <i class="fas fa-water"></i>
-                            <span>dam-kiira</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Direct Messages List -->
-                <div id="directList" class="chat-list">
-                    <div class="chat-list-header">
-                        <span>Direct Messages</span>
-                        <button class="chat-add-btn" id="addDirect">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="chat-items">
-                        <div class="chat-item" data-type="direct" data-id="john-doe">
-                            <div class="user-avatar online">JD</div>
-                            <div class="user-info">
-                                <span class="user-name">John Doe</span>
-                                <span class="user-role">Senior Engineer</span>
-                            </div>
-                            <span class="unread-count">1</span>
-                        </div>
-                        <div class="chat-item" data-type="direct" data-id="sarah-wilson">
-                            <div class="user-avatar away">SW</div>
-                            <div class="user-info">
-                                <span class="user-name">Sarah Wilson</span>
-                                <span class="user-role">Dam Operator</span>
-                            </div>
-                        </div>
-                        <div class="chat-item" data-type="direct" data-id="mike-johnson">
-                            <div class="user-avatar offline">MJ</div>
-                            <div class="user-info">
-                                <span class="user-name">Mike Johnson</span>
-                                <span class="user-role">Maintenance Chief</span>
-                            </div>
-                        </div>
-                        <div class="chat-item" data-type="direct" data-id="lisa-chen">
-                            <div class="user-avatar online">LC</div>
-                            <div class="user-info">
-                                <span class="user-name">Lisa Chen</span>
-                                <span class="user-role">Data Analyst</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Chat Content -->
-            <div class="chat-content">
-                <!-- Chat Messages Area -->
-                <div class="chat-messages" id="chatMessages">
-                    <div class="chat-header-info">
-                        <div class="chat-channel-info">
-                            <i class="fas fa-hashtag"></i>
-                            <div>
-                                <h4 id="currentChatName">general</h4>
-                                <p id="currentChatDesc">General operational discussions</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Sample Messages -->
-                    <div class="message-group">
-                        <div class="message-avatar">JD</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">John Doe</span>
-                                <span class="message-role">Senior Engineer</span>
-                                <span class="message-time">10:30 AM</span>
-                            </div>
-                            <div class="message-text">Good morning team! Water levels are looking stable across all dams today. 💧</div>
-                        </div>
-                    </div>
-                    
-                    <div class="message-group">
-                        <div class="message-avatar">SW</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">Sarah Wilson</span>
-                                <span class="message-role">Dam Operator</span>
-                                <span class="message-time">10:32 AM</span>
-                            </div>
-                            <div class="message-text">Thanks John! I'm seeing some minor fluctuations at Bujagali, but nothing concerning yet.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="message-group">
-                        <div class="message-avatar">LC</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-author">Lisa Chen</span>
-                                <span class="message-role">Data Analyst</span>
-                                <span class="message-time">10:35 AM</span>
-                            </div>
-                            <div class="message-text">AI predictions show potential increase in inflow over the next 48 hours. Should we prepare for higher discharge rates?</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Chat Input -->
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <button class="chat-attachment-btn">
-                            <i class="fas fa-paperclip"></i>
-                        </button>
-                        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
-                        <button class="chat-emoji-btn">
-                            <i class="fas fa-smile"></i>
-                        </button>
-                        <button id="chatSend" class="chat-send-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 </body>
